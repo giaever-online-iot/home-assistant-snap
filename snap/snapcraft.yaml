@@ -1,0 +1,54 @@
+name: home-assistant
+version: git
+summary: Open source home automation that puts local control and privacy first
+description:
+    Home Assistant is a home automation platform running on Python 3. 
+    It is able to track and control all devices at home and offer a 
+    platform for automating control.
+grade: devel
+base: core18
+confinement: devmode
+apps:
+    hass:
+        command: hass --config $SNAP_DATA
+        daemon: simple
+        restart-condition: always
+        plugs: [network, network-bind]
+
+parts:
+    home-assistant:
+        plugin: python
+        source: https://github.com/home-assistant/home-assistant.git
+        source-tag: "0.90.1"
+        python-version: python3
+        python-packages:
+            - Cython
+        build-packages:
+            - python3-dev
+            - pkg-config
+        stage-packages:
+            - libavformat-dev
+            - libavcodec-dev
+            - libavdevice-dev
+            - libavutil-dev 
+            - libswscale-dev
+            - libswresample-dev
+            - libavfilter-dev
+            - libslang2-dev
+            - libglu1-mesa-dev
+            - freeglut3-dev
+            - cython3
+        override-build: |
+            # Remove LICENCE-part of insteonplm, which causes pip to fail
+            echo "Fixing broken insteonplm install"
+            PPACKAGES="$(pwd)/../python-packages/"
+            INSTEONPLM=$(basename "$(ls ${PPACKAGES} | grep insteonplm --max-count=1)")
+            echo "* Extracting ${INSTEONPLM}"
+            SCFG=$(tar -xvzf "${PPACKAGES}/${INSTEONPLM}" | grep setup.cfg --max-count=1)
+            sed '/^license_file/d' "${SCFG}" > ${SCFG}
+            echo "* Compressing ${INSTEONPLM}"
+            tar -zcvf "${PPACKAGES}/${INSTEONPLM}" $(dirname "${SCFG}")
+            echo "* Updated ${INSTEONPLM}"
+            rm -rf $(dirname "${SCFG}")
+            snapcraftctl build
+        requirements: requirements_all.txt
