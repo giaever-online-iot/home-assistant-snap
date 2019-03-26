@@ -1,7 +1,7 @@
 name: home-assistant
 version: git
 summary: Open source home automation that puts local control and privacy first
-description:
+description: |
     Home Assistant is a home automation platform running on Python 3. 
     It is able to track and control all devices at home and offer a 
     platform for automating control.
@@ -37,6 +37,7 @@ parts:
             - libslang2-dev
             - libglu1-mesa-dev
             - freeglut3-dev
+            - libudev-dev
             - cython3
         override-build: |
             # Remove LICENCE-part of insteonplm, which causes pip to fail
