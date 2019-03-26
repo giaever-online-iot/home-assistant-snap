@@ -6,7 +6,7 @@ Current Home Assistant version: 0.90.1
 
 # Install
 1. Make sure you have all [necessary tools](https://docs.snapcraft.io/installing-snapd/6735) to build a snap
-2. Clone this repo ```git clone git.giaever.org@git.giaever.org:joachimmg/home-assistant-snap.git```
+2. Clone this repo ```git clone https://git.giaever.org/joachimmg/home-assistant-snap.git```
 3. Go into the directoy ```cd home-assistant-snap``` and issue ``` snapcraft ``` to start building.
 
 A file named ```home-assistant-snap[...].snap``` should now be in the folder and now you can install it with
