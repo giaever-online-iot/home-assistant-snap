@@ -52,4 +52,5 @@ parts:
             echo "* Updated ${INSTEONPLM}"
             rm -rf $(dirname "${SCFG}")
             snapcraftctl build
-        requirements: requirements_all.txt
+        requirements: 
+            - requirements_all.txt
