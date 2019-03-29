@@ -22,7 +22,7 @@ function container_snap_cmd {
 [[ ! -z $(which snap) ]] || sudo apt install snapd
 [[ ! -z $(which lxd) ]] || sudo snap install lxd
 
-'''container_sh "echo true" || (lxc launch ${CONTAINER_OS}:${CONTIANER_VERSION} ${CONTAINER_NAME} && sleep 5) || (lxd init && lxc launch ${CONTAINER_OS}:${CONTIANER_VERSION} ${CONTAINER_NAME} || sleep 5)
+container_sh "echo true" || (lxc launch ${CONTAINER_OS}:${CONTIANER_VERSION} ${CONTAINER_NAME} && sleep 5) || (lxd init && lxc launch ${CONTAINER_OS}:${CONTIANER_VERSION} ${CONTAINER_NAME} || sleep 5)
 
 container_sh "apt update && apt upgrade -y && apt dist-upgrade -y"
 
@@ -43,7 +43,7 @@ lxc file push ../${CONTAINER_NAME} ${CONTAINER_NAME}/root/ -r
 
 container_snap_cmd "snapcraft  --destructive-mode"
 
-if [ $? -eq 0 ]; then'''
+if [ $? -eq 0 ]; then
 	FILE=$(container_snap_cmd "ls | grep .snap --max-count=1")
 	lxc file pull ${CONTAINER_NAME}/root/${CONTAINER_NAME}/${FILE} ./
-#fi
+fi
