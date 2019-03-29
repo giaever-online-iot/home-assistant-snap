@@ -27,6 +27,7 @@ parts:
             - python3-dev
             - pkg-config
             - autoconf
+            - libudev-dev
         stage-packages:
             - libavformat-dev
             - libavcodec-dev
@@ -38,7 +39,6 @@ parts:
             - libslang2-dev
             - libglu1-mesa-dev
             - freeglut3-dev
-            - libudev-dev
             - cython3
         override-build: |
             # Remove LICENCE-part of insteonplm, which causes pip to fail
