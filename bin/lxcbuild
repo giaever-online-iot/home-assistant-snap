@@ -1,0 +1,49 @@
+#!/usr/bin/env bash
+
+CONTAINER_OS=ubuntu
+CONTAINER_VERSION=18.04
+CONTAINER_NAME=$(basename `git rev-parse --show-toplevel`)
+
+function container_sh {
+	lxc exec ${CONTAINER_NAME} -- sh -c "${1}"
+	return $?
+}
+
+function container_cmd {
+	lxc exec ${CONTAINER_NAME} -- ${1}
+	return $?
+}
+
+function container_snap_cmd {
+	container_sh "cd ~/${CONTAINER_NAME} && ${1}"
+	return $?
+}
+
+[[ ! -z $(which snap) ]] || sudo apt install snapd
+[[ ! -z $(which lxd) ]] || sudo snap install lxd
+
+'''container_sh "echo true" || (lxc launch ${CONTAINER_OS}:${CONTIANER_VERSION} ${CONTAINER_NAME} && sleep 5) || (lxd init && lxc launch ${CONTAINER_OS}:${CONTIANER_VERSION} ${CONTAINER_NAME} || sleep 5)
+
+container_sh "apt update && apt upgrade -y && apt dist-upgrade -y"
+
+if [ $? -ne 0 ]; then
+	echo "Cannot create container ${CONTAINER_OS}:${CONTAINER_VERSION} for ${CONTAINER_NAME}"
+	exit 1
+fi
+
+container_sh "snap list snapcraft"
+
+if [ $? -ne 0 ]; then
+	container_sh "snap install snapcraft --classic"
+fi
+
+container_sh "[ -d ~/${CONTAINER_NAME} ] && rm -rf ~/${CONTAINER_NAME}"
+
+lxc file push ../${CONTAINER_NAME} ${CONTAINER_NAME}/root/ -r
+
+container_snap_cmd "snapcraft  --destructive-mode"
+
+if [ $? -eq 0 ]; then'''
+	FILE=$(container_snap_cmd "ls | grep .snap --max-count=1")
+	lxc file pull ${CONTAINER_NAME}/root/${CONTAINER_NAME}/${FILE} ./
+#fi

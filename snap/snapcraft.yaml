@@ -26,6 +26,7 @@ parts:
         build-packages:
             - python3-dev
             - pkg-config
+            - autoconf
         stage-packages:
             - libavformat-dev
             - libavcodec-dev
