@@ -4,12 +4,16 @@ Snap (Snapcraft.yaml) recipe for the Open source home automation software that p
 
 Current Home Assistant version: 0.90.1
 
-# Install
-1. Make sure you have all [necessary tools](https://docs.snapcraft.io/installing-snapd/6735) to build a snap
-2. Clone this repo ```git clone https://git.giaever.org/joachimmg/home-assistant-snap.git```
-3. Go into the directoy ```cd home-assistant-snap``` and issue ``` snapcraft ``` to start building.
+# Build
+1. Clone the repo ```git clone https://git.giaever.org/joachimmg/home-assistant-snap.git```.
+2. Go into the directoy ```cd home-assistant-snap```.
+3. Check out the latest tag. The versioning is following the version of Home Assistant (e.g 0.90.1) plus a letter describing revision, e.g ```0.90.1.b```.
+4. To compile the snap you can use two options:
+	1. Make sure you have all [necessary tools](https://docs.snapcraft.io/installing-snapd/6735) to build a snap, and issue the command ```snapcraft``` to build with multipass (VM).
+	2. Run the script ```./bin/lxdbuild``` to build with a LXD container, which will install all necessary tools and remove them after completion. This is the preferred method during development of this recipe.
 
-A file named ```home-assistant-snap[...].snap``` should now be in the folder and now you can install it with
+# Install
+A file named ```home-assistant-snap[...].snap``` (e.g home-assistant_0+git.5bd544d_amd64.snap) should now be in the root-folder of the project and now you can install it with
 
 ```bash
 snap install [file] --devmode

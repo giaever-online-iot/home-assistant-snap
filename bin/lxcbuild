@@ -15,35 +15,69 @@ function container_cmd {
 }
 
 function container_snap_cmd {
-	container_sh "cd ~/${CONTAINER_NAME} && ${1}"
+	container_sh "cd $(container_home)/${CONTAINER_NAME} && ${1}"
 	return $?
 }
 
+function container_home {
+	container_sh "echo $(echo '${HOME}')"
+	return $?
+}
+
+function cprint {
+	ERR='\033[0;31m'
+	OK='\033[0;32m'
+	END='\033[0m'
+	case "${1}" in 
+		err)
+			echo -e "LXDBuild ${ERR}Error: ${2}${END}"
+		;;
+		ok)
+			echo -e "LXDBuild ${OK}${2}${END}"
+		;;
+	esac
+}
+
+if [ "${CONTAINER_NAME}" != "$(basename $(pwd))" ]; then
+	cprint "err" "Script must be ran from root folder of project."
+	exit 1
+fi;
+
+cprint "ok" "Checking for snap and lxd compability"
 [[ ! -z $(which snap) ]] || sudo apt install snapd
 [[ ! -z $(which lxd) ]] || sudo snap install lxd
 
+
+cprint "ok" "Checking LXD configuration"
 container_sh "echo true" || (lxc launch ${CONTAINER_OS}:${CONTIANER_VERSION} ${CONTAINER_NAME} && sleep 5) || (lxd init && lxc launch ${CONTAINER_OS}:${CONTIANER_VERSION} ${CONTAINER_NAME} || sleep 5)
 
+cprint "ok" "Updating container"
 container_sh "apt update && apt upgrade -y && apt dist-upgrade -y"
 
 if [ $? -ne 0 ]; then
-	echo "Cannot create container ${CONTAINER_OS}:${CONTAINER_VERSION} for ${CONTAINER_NAME}"
+	cprint "err" "Cannot create container ${CONTAINER_OS}:${CONTAINER_VERSION} for ${CONTAINER_NAME}"
 	exit 1
 fi
 
+cprint "ok" "Looking for snapcraft"
 container_sh "snap list snapcraft"
 
 if [ $? -ne 0 ]; then
+	cprint "ok" " - Installing snapcraft"
 	container_sh "snap install snapcraft --classic"
 fi
 
-container_sh "[ -d ~/${CONTAINER_NAME} ] && rm -rf ~/${CONTAINER_NAME}"
+container_sh "[ -d $(container_home)/${CONTAINER_NAME} ] && rm -rf $(container_home)/${CONTAINER_NAME}"
 
-lxc file push ../${CONTAINER_NAME} ${CONTAINER_NAME}/root/ -r
+cprint "ok" "Pushing $(pwd) to container"
+lxc file push "$(pwd)" "${CONTAINER_NAME}/$(container_home)/" -r
 
-container_snap_cmd "snapcraft  --destructive-mode"
+cprint "ok" "Building snap"
+container_snap_cmd "snapcraft --destructive-mode"
 
 if [ $? -eq 0 ]; then
 	FILE=$(container_snap_cmd "ls | grep .snap --max-count=1")
-	lxc file pull ${CONTAINER_NAME}/root/${CONTAINER_NAME}/${FILE} ./
+	lxc file pull "${CONTAINER_NAME}/$(container_home)/${CONTAINER_NAME}/${FILE}" "$(pwd)"
+else
+	cprint "err" "Failed to build snap"
 fi
