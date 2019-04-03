@@ -4,6 +4,21 @@ CONTAINER_OS=ubuntu
 CONTAINER_VERSION=18.04
 CONTAINER_NAME=$(basename `git rev-parse --show-toplevel`)
 
+function cprint {
+	ERR='\033[0;31m'
+	OK='\033[0;32m'
+	INFO='\033[0;33m'
+	END='\033[0m'
+	while IFS= read -r L; do
+	case "${1}" in 
+		err) echo -e "LXDBuild ${ERR}Error: ${L}${END}";;
+		ok) echo -e "LXDBuild ${OK}${L}${END}";;
+		info) echo -e "LXDBuild ${INFO}${L}${END}";;
+	esac
+	done < <(printf "%s\n" "${2}")
+}
+
+
 if [ "${CONTAINER_NAME}" != "$(basename $(pwd))" ]; then
 	cprint "err" "Run script from root folder of project"
 	exit 1
@@ -18,20 +33,6 @@ if [ "${CURRF}" != "$(md5sum "${0}")" ]; then
 	${SELF}
 	exit 1
 fi
-
-function cprint {
-	ERR='\033[0;31m'
-	OK='\033[0;32m'
-	INFO='\033[0;33m'
-	END='\033[0m'
-	while IFS= read -r L; do
-	case "${1}" in 
-		err) echo -e "LXDBuild ${ERR}Error: ${L}${END}";;
-		ok) echo -e "LXDBuild ${OK}${L}${END}";;
-		info) echo -e "LXDBuild ${INFO}${L}${END}";;
-	esac
-	done < <(printf "%s\n" "${2}")
-}
 
 function container_sh {
 	if [ $# -eq 1 ]; then
