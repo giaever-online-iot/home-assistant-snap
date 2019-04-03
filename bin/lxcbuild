@@ -110,6 +110,7 @@ git pull
 if [ "${CURRF}" != "$(md5sum "${0}")" ]; then
 	cprint "File changes on last pull. Restarting..."
 	eval "${SELF}"
+	cprint "Ended child"
 	exit 1
 fi
 
