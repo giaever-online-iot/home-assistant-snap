@@ -124,7 +124,7 @@ fi
 container_snap_sh 'ls'
 if [ $? -ne 0 ]; then
 	cprint "info" "Pushing $(pwd) to ${CONTAINER_NAME}:$(container_home)"
-	$(lxc file push "$(pwd)" "${CONTAINER_NAME}/$(container_home)" -r)
+	lxc file push "$(pwd)" "${CONTAINER_NAME}/$(container_home)" -rq
 else
 	cprint "Pulling repo"
 	git pull
