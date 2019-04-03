@@ -24,12 +24,15 @@ function cprint {
 }
 
 function container_sh {
+	if [ $# -eq 1 ]; then
+		cprint "info" "${1}"
+	fi
 	lxc exec ${CONTAINER_NAME} -- sh -c "${1}"
 	return $?
 }
 
 function container_home {
-	container_sh "echo $(echo '${HOME}')"
+	container_sh "echo $(echo '${HOME}')" 1
 	return $?
 }
 
