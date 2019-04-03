@@ -38,7 +38,6 @@ function container_snap_sh {
 
 function check_installed {
 	cprint "ok" "Checks if ${1} '${2}' is installed"
-
 	case ${1} in
 		dpkg) CHECK="$(dpkg-query -W --showformat='${Status}\n' ${2})";;
 		snap) CHECK="$(snap list ${2})";;
@@ -110,7 +109,7 @@ git pull
 
 if [ "${CURRF}" != "$(md5sum "${0}")" ]; then
 	cprint "File changes on last pull. Restarting..."
-	${SELF}
+	eval "${SELF}"
 	exit 1
 fi
 
