@@ -18,22 +18,6 @@ function cprint {
 	done < <(printf "%s\n" "${2}")
 }
 
-
-if [ "${CONTAINER_NAME}" != "$(basename $(pwd))" ]; then
-	cprint "err" "Run script from root folder of project"
-	exit 1
-fi
-
-CURRF="$(md5sum "${0}")"
-
-git pull
-
-if [ "${CURRF}" != "$(md5sum "${0}")" ]; then
-	cprint "File changes on last pull. Restarting..."
-	${SELF}
-	exit 1
-fi
-
 function container_sh {
 	if [ $# -eq 1 ]; then
 		cprint "info" "${1}"
@@ -114,6 +98,22 @@ function init_container {
 	fi
 	return 0;
 }
+
+if [ "${CONTAINER_NAME}" != "$(basename $(pwd))" ]; then
+	cprint "err" "Run script from root folder of project"
+	exit 1
+fi
+
+CURRF="$(md5sum "${0}")"
+
+git pull
+
+if [ "${CURRF}" != "$(md5sum "${0}")" ]; then
+	cprint "File changes on last pull. Restarting..."
+	${SELF}
+	exit 1
+fi
+
 
 check_installed "dpkg" "snapd"
 check_installed "snap" "lxd"
