@@ -29,8 +29,8 @@ function container_sh {
 	fi
 	OUT=$(lxc exec ${CONTAINER_NAME} -- sh -c "${1}")
 	RET=$?
-	if [ $# -eq 1 ]; then
-		[ ${RET} -eq 0 ] && cprint "ok" "${OUT}" || cprint "inf" "${OUT}"
+	if [ $# -eq 1 ] && [ ${RET} -ne 0 ]; then
+		cprint "info" "${OUT}"
 	fi
 	return ${RET}
 }
