@@ -93,7 +93,9 @@ function init_container {
 		fi
 
 	else
-		lxc start "${CONTAINER_NAME}"
+		if [ $(lxc info "${CONTAINER_NAME}" | grep "Running" | wc -l) -eq 0 ]; then
+			lxc start "${CONTAINER_NAME}"
+		fi
 	fi 
 	container_sh "echo '* Container initialized'"
 	if [ $? -ne 0 ]; then
