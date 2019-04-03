@@ -27,13 +27,8 @@ function container_sh {
 	if [ $# -eq 1 ]; then
 		cprint "info" "${1}"
 	fi
-	OUT=$(lxc exec ${CONTAINER_NAME} -- sh -c "${1}")
-	RET=$?
-	if [ $# -eq 1 ] && [ ${RET} -ne 0 ]; then
-		echo ${OUT}
-		cprint "info" "${OUT}"
-	fi
-	return ${RET}
+	lxc exec ${CONTAINER_NAME} -- sh -c "${1}"
+	return $?
 }
 
 function container_home {
