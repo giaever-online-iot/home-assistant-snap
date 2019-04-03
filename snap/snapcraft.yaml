@@ -48,14 +48,21 @@ parts:
             # Remove LICENCE-part of insteonplm, which causes pip to fail
             echo "Fixing broken insteonplm install"
             PPACKAGES="$(pwd)/../python-packages/"
-            INSTEONPLM=$(basename "$(ls ${PPACKAGES} | grep insteonplm --max-count=1)")
-            echo "* Extracting ${INSTEONPLM}"
-            SCFG=$(tar -xvzf "${PPACKAGES}/${INSTEONPLM}" | grep setup.cfg --max-count=1)
+            INSTEONPLM="${PPACKAGES}/$(basename "$(ls ${PPACKAGES} | grep insteonplm*.tar.gz --max-count=1)")"
+            echo " * Extracting ${INSTEONPLM}"
+            SCFG=$(tar -xvzf "${INSTEONPLM}" | grep setup.cfg --max-count=1)
+            BFILE="${INSTEONPLM}.bup" 
+            if [ ! -f "${BFILE}" ]; then
+                echo "Creating backup * ${BFILE}"
+                mv -f "${INSTEONPLM}" "${BFILE}"
+            fi
+            echo " * Editing ${SCFG}"
             sed -i '/^license_file/d' "${SCFG}"
-            echo "* Compressing ${INSTEONPLM}"
-            tar -zcf "${PPACKAGES}/${INSTEONPLM}" $(dirname "${SCFG}")
-            echo "* Updated ${INSTEONPLM}"
+            echo " * Compressing ${INSTEONPLM}"
+            tar -zcf "${INSTEONPLM}" $(dirname "${SCFG}")
+            echo " * Updated ${INSTEONPLM}"
             rm -rf $(dirname "${SCFG}")
+            echo " * Deleted $(dirname ${SCFG})"
             snapcraftctl build
         requirements: 
             - requirements_all.txt
