@@ -51,7 +51,7 @@ parts:
             INSTEONPLM=$(basename "$(ls ${PPACKAGES} | grep insteonplm --max-count=1)")
             echo "* Extracting ${INSTEONPLM}"
             SCFG=$(tar -xvzf "${PPACKAGES}/${INSTEONPLM}" | grep setup.cfg --max-count=1)
-            sed '/^license_file/d' "${SCFG}" > ${SCFG}
+            sed -i '/^license_file/d' "${SCFG}"
             echo "* Compressing ${INSTEONPLM}"
             tar -zcf "${PPACKAGES}/${INSTEONPLM}" $(dirname "${SCFG}")
             echo "* Updated ${INSTEONPLM}"

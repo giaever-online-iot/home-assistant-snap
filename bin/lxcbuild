@@ -132,16 +132,17 @@ if [ $? -ne 0 ]; then
 else
 	cprint "Pulling repo"
 	git pull
-	TAG=$(git tag | tail -n 1)
-	while true; do 
-		read -p "Check out latest tag ${TAG}? Y/N/M (M=master): " A
-		case ${A} in 
-			[Yy]* ) git checkout "${TAG}"; break;;
-			[Nn]* ) cprint "info" "Not checking out anything"; break;;
-			[Mm]* ) git checkout master
-		esac
-	done
 fi
+
+TAG=$(git tag | tail -n 1)
+while true; do 
+	read -p "Check out latest tag ${TAG}? Y=yes, M=master, Enter=no change: " A
+	case ${A} in 
+		[Yy]* ) container_sh "git checkout ${TAG}"; break;;
+		[Mm]* ) container_sh "git checkout master"; break;;
+		* ) cprint "info" "Not checking out anything"; break;;
+	esac
+done
 
 cprint "info" "Building snap"
 RET=-1
