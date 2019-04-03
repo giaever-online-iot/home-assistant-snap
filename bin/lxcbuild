@@ -79,7 +79,6 @@ function check_installed {
 
 function init_container {
 	RETRY=$( [ $# -eq 2 ] && echo 1 || echo "0" )
-	echo "${RETRY}"
 	if [ $(lxc list "${CONTAINER_NAME}" | grep "${CONTAINER_NAME}" | wc -l) -eq 0 ]; then 
 		lxc launch "${CONTAINER_OS}:${CONTIANER_VERSION}" "${CONTAINER_NAME}"
 		RET=$?
