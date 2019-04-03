@@ -27,8 +27,12 @@ function container_sh {
 	if [ $# -eq 1 ]; then
 		cprint "info" "${1}"
 	fi
-	lxc exec ${CONTAINER_NAME} -- sh -c "${1}"
-	return $?
+	OUT=$(lxc exec ${CONTAINER_NAME} -- sh -c "${1}")
+	RET=$?
+	if [ $# -eq 1 ]; then
+		[ ${RET} -eq 0 ] && cprint "ok" "${OUT}" || cprint "inf" "${OUT}"
+	fi
+	return ${RET}
 }
 
 function container_home {
@@ -137,8 +141,8 @@ TAG=$(git tag | tail -n 1)
 while true; do 
 	read -p "Check out latest tag ${TAG}? Y=yes, M=master, Enter=no change: " A
 	case ${A} in 
-		[Yy]* ) container_sh "git checkout ${TAG}"; break;;
-		[Mm]* ) container_sh "git checkout master"; break;;
+		[Yy]* ) container_snap_sh "git checkout ${TAG}"; break;;
+		[Mm]* ) container_snap_sh "git checkout master"; break;;
 		* ) cprint "info" "Not checking out anything"; break;;
 	esac
 done
