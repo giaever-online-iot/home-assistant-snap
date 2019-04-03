@@ -18,7 +18,6 @@ if [ "${CURRF}" != "$(md5sum "${0}")" ]; then
 	${SELF}
 	exit 1
 fi
-exit 1
 
 function cprint {
 	ERR='\033[0;31m'
