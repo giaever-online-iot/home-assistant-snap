@@ -28,6 +28,10 @@ parts:
             - pkg-config
             - autoconf
             - libudev-dev
+            - libffi-dev
+            - libssl-dev
+            - libjpeg-dev
+            - zlib1g-dev
         stage-packages:
             - libavformat-dev
             - libavcodec-dev
