@@ -53,7 +53,7 @@ parts:
             SCFG=$(tar -xvzf "${PPACKAGES}/${INSTEONPLM}" | grep setup.cfg --max-count=1)
             sed '/^license_file/d' "${SCFG}" > ${SCFG}
             echo "* Compressing ${INSTEONPLM}"
-            tar -zcvf "${PPACKAGES}/${INSTEONPLM}" $(dirname "${SCFG}")
+            tar -zcf "${PPACKAGES}/${INSTEONPLM}" $(dirname "${SCFG}")
             echo "* Updated ${INSTEONPLM}"
             rm -rf $(dirname "${SCFG}")
             snapcraftctl build

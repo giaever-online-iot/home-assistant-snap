@@ -83,7 +83,6 @@ function init_container {
 	if [ $(lxc list "${CONTAINER_NAME}" | grep "${CONTAINER_NAME}" | wc -l) -eq 0 ]; then 
 		lxc launch "${CONTAINER_OS}:${CONTIANER_VERSION}" "${CONTAINER_NAME}"
 		RET=$?
-		echo ${RET}
 		if [ ${RET} -ne 0 ] && [ "${RETRY}" -eq 0 ]; then
 			cprint "err" "${RET}|${RETRY}Must init LXD"
 			lxd init
