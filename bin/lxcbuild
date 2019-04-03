@@ -24,7 +24,7 @@ function cprint {
 }
 
 function container_sh {
-	if [ $# -eq 1 ]; then
+	if [ $# -eq 1 ]; then
 		cprint "info" "${1}"
 	fi
 	lxc exec ${CONTAINER_NAME} -- sh -c "${1}"
@@ -143,9 +143,8 @@ else
 fi
 
 cprint "info" "Building snap"
-
 RET=-1
-if [ $(container_snap_sh "ls | grep prime | wc -l") -ne 0 ]; then
+if [ "$(container_sh "ls $(container_home)/${CONTAINER_NAME} | grep prime | wc -l")" == "1" ]; then
 	container_snap_sh "snapcraft prime --destructive-mode"
 	if [ $? -ne 0 ]; then
 		container_snap_sh "snapcraft clean --destructive-mode"
