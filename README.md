@@ -10,7 +10,7 @@ Current Home Assistant version: 0.90.1
 3. Check out the latest tag. The versioning is following the version of Home Assistant (e.g 0.90.1) plus a letter describing revision, e.g ```0.90.1.b```.
 4. To compile the snap you can use two options:
 	1. Make sure you have all [necessary tools](https://docs.snapcraft.io/installing-snapd/6735) to build a snap, and issue the command ```snapcraft``` to build with multipass (VM).
-	2. Run ```git submodule --remote lxdbuild``` to fetch the build module, then run the script ```./lddbuild/lxcbuild``` to build with a LXD container, which will install all necessary tools in the container and pull the built snap to the host system. This is the preferred method during development of this recipe. The container can be deleted with ```lxc stop home-assistant-snap && lxc delete home-assistant-snap```.
+	2. Run ```git submodule update --init``` to fetch the build module, then run the script ```./lddbuild/lxcbuild``` to build with a LXD container, which will install all necessary tools in the container and pull the built snap to the host system. This is the preferred method during development of this recipe. The container can be deleted with ```lxc stop home-assistant-snap && lxc delete home-assistant-snap```.
 
 # Install
 A file named ```home-assistant-snap[...].snap``` (e.g home-assistant_0+git.5bd544d_amd64.snap) should now be in the root-folder of the project and now you can install it with
