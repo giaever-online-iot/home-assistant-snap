@@ -19,7 +19,7 @@ parts:
     home-assistant:
         plugin: python
         source: https://github.com/home-assistant/home-assistant.git
-        source-tag: "0.91.3"
+        source-tag: "0.91.4"
         python-version: python3
         python-packages:
             - Cython
