@@ -6,69 +6,51 @@ description: |
     It is able to track and control all devices at home and offer a 
     platform for automating control.
 grade: devel
-base: core18
+base: core20
 confinement: devmode
 apps:
-    hass:
-        command: hass --config $SNAP_DATA
-        daemon: simple
-        restart-condition: always
-        plugs: [network, network-bind]
-
+  hass:
+    command: bin/hass --config $SNAP_DATA
+    daemon: simple
+    restart-condition: always
+    plugs: [network, network-bind]
 parts:
-    home-assistant:
-        plugin: python
-        source: https://github.com/home-assistant/home-assistant.git
-        source-tag: "0.91.4"
-        python-version: python3
-        python-packages:
-            - Cython
-        build-packages:
-            - python3-dev
-            - pkg-config
-            - autoconf
-            - libffi-dev
-            - libjpeg8-dev
-            - libssl-dev
-            - libudev-dev
-            - libusb-1.0-0-dev
-            - libxml2-dev
-            - libxslt1-dev
-            - zlib1g-dev
-        stage-packages:
-            - libavformat-dev
-            - libavcodec-dev
-            - libavdevice-dev
-            - libavutil-dev 
-            - libswscale-dev
-            - libswresample-dev
-            - libavfilter-dev
-            - libslang2-dev
-            - libglu1-mesa-dev
-            - freeglut3-dev
-            - cython3
-        override-build: |
-            # Remove LICENCE-part of insteonplm, which causes pip to fail
-            echo "Fixing broken insteonplm install"
-            PKGS="$(pwd)/../python-packages"
-            IPKG="$(ls ${PKGS}/insteonplm*.tar.gz | tail -n 1)"
-            BIPKG="${HOME}/$(basename ${IPKG}.bup)"
-            if [ ! -f "${BIPKG}" ]; then
-                echo -e " * Creating backup to\n\tTO: ${BIPKG}\n\t<= ${IPKG}"
-                cp "${IPKG}" "${BIPKG}"
-            else
-                echo -e " * Restoring backup\n\tFROM: ${BIPKG}\n\t=> ${IPKG}"
-                cp "${BIPKG}" "${IPKG}"
-            fi
-            echo " * Insteonplm file: ${IPKG}"
-            SCFG=$(tar -xvzf "${IPKG}" | grep setup.cfg --max-count=1)
-            rm "${IPKG}"
-            echo " * Editing setup.cfg file: ${SCFG}"
-            sed -i '/^license_file/d' "${SCFG}"
-            echo " * Compressing $(dirname ${SCFG}) to: ${IPKG}"
-            tar -zcf "${IPKG}" "$(dirname ${SCFG})"
-            echo " * Deleting tmp-folder $(dirname ${SCFG})"
-            rm -rf "$(dirname ${SCFG})"
-            snapcraftctl build
-        requirements: 
-            - requirements_all.txt
+  homeassistant:
+    plugin: python-wot-plugin
+    source: https://github.com/home-assistant/core.git
+    source-tag: 0.112.3
+    #build-environment:
+    #  - SNAPCRAFT_PYTHON_INTERPRETER: "python3.8"
+    python-packages:
+      - setuptools
+      - wheel
+      - Cython
+    build-packages:
+      - python3
+      - python3-dev
+      - pkg-config
+      - autoconf
+      - build-essential
+      - libffi-dev
+      - libglib2.0-dev
+      - libjpeg-dev
+      - libssl-dev
+      - libxml2-dev
+      - libxslt1-dev
+      - libudev-dev
+      - zlib1g-dev
+      - cython3
+    stage-packages:
+      - libavformat-dev
+      - libavcodec-dev
+      - libavdevice-dev
+      - libavutil-dev
+      - libswscale-dev
+      - libavresample-dev
+      - libavfilter-dev
+      - libglu1-mesa-dev
+      - ffmpeg
+    requirements:
+      - requirements_all.txt
+    constraints:
+      - homeassistant/package_constraints.txt
