@@ -13,7 +13,13 @@ apps:
     command: bin/hass --config $SNAP_DATA
     daemon: simple
     restart-condition: always
-    plugs: [network, network-bind]
+    plugs: 
+      - bluez
+      - network
+      - network-bind
+
+      # GPIO devices etc..
+      - physical-memory-control
 parts:
   homeassistant:
     plugin: python-wot-plugin
@@ -29,6 +35,7 @@ parts:
       - pkg-config
       - autoconf
       - build-essential
+      - cmake
       - cython3
       - ffmpeg
       - libavcodec-dev
