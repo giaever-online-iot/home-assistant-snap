@@ -1,4 +1,4 @@
-name: home-assistant
+name: home-assistant-snap
 version: '0.112.3'
 summary: Open source home automation that puts local control and privacy first
 description: |
@@ -6,6 +6,7 @@ description: |
     It is able to track and control all devices at home and offer a 
     platform for automating control.
 base: core20
+grade: stable
 confinement: strict
 apps:
   hass:
