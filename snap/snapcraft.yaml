@@ -1,13 +1,12 @@
 name: home-assistant
-version: git
+version: '0.112.3'
 summary: Open source home automation that puts local control and privacy first
 description: |
     Home Assistant is a home automation platform running on Python 3. 
     It is able to track and control all devices at home and offer a 
     platform for automating control.
-grade: devel
 base: core20
-confinement: devmode
+confinement: strict
 apps:
   hass:
     command: bin/hass --config $SNAP_DATA
@@ -18,9 +17,7 @@ parts:
   homeassistant:
     plugin: python-wot-plugin
     source: https://github.com/home-assistant/core.git
-    source-tag: 0.112.3
-    #build-environment:
-    #  - SNAPCRAFT_PYTHON_INTERPRETER: "python3.8"
+    source-tag: ${SNAPCRAFT_PROJECT_VERSION}
     python-packages:
       - setuptools
       - wheel
@@ -31,25 +28,26 @@ parts:
       - pkg-config
       - autoconf
       - build-essential
-      - libffi-dev
-      - libglib2.0-dev
-      - libjpeg-dev
-      - libssl-dev
-      - libxml2-dev
-      - libxslt1-dev
-      - libudev-dev
-      - zlib1g-dev
       - cython3
-    stage-packages:
-      - libavformat-dev
+      - ffmpeg
       - libavcodec-dev
       - libavdevice-dev
-      - libavutil-dev
-      - libswscale-dev
-      - libavresample-dev
       - libavfilter-dev
+      - libavformat-dev
+      - libavresample-dev
+      - libavutil-dev
+      - libffi-dev
+      - libglib2.0-dev
       - libglu1-mesa-dev
-      - ffmpeg
+      - libjpeg-dev
+      - libopenzwave1.5-dev
+      - libssl-dev
+      - libswscale-dev
+      - libudev-dev
+      - libxml2-dev
+      - libxslt1-dev
+      - zlib1g-dev
+
     requirements:
       - requirements_all.txt
     constraints:

@@ -5,33 +5,81 @@ Snap (Snapcraft.yaml) recipe for the Open source home automation software that p
 Current Home Assistant version: 0.90.1
 
 # Build
-1. Clone the repo ```git clone https://git.giaever.org/joachimmg/home-assistant-snap.git```.
-2. Go into the directoy ```cd home-assistant-snap```.
-3. Check out the latest tag. The versioning is following the version of Home Assistant (e.g 0.90.1) plus a letter describing revision, e.g ```0.90.1.b```.
-4. To compile the snap you can use two options:
-	1. Make sure you have all [necessary tools](https://docs.snapcraft.io/installing-snapd/6735) to build a snap, and issue the command ```snapcraft``` to build with multipass (VM).
-	2. Run ```git submodule update --init``` to fetch the build module, then run the script ```./lddbuild/lxcbuild``` to build with a LXD container, which will install all necessary tools in the container and pull the built snap to the host system. This is the preferred method during development of this recipe. The container can be deleted with ```lxc stop home-assistant-snap && lxc delete home-assistant-snap```.
+Simply
 
-# Install
-A file named ```home-assistant-snap[...].snap``` (e.g home-assistant_0+git.5bd544d_amd64.snap) should now be in the root-folder of the project and now you can install it with
+1. ##### Clone repo over HTTPS
 
-```bash
-snap install [file] --devmode
+```
+git clone https://git.giaever.org/joachimmg/home-assistant-snap.git
 ```
 
-## Issues
+2. ##### Change directory into the cloned repository
 
-For issues directly related to Home Assistant, please read their article on [Reporting Issues](https://www.home-assistant.io/help/reporting_issues/). 
-
-Issues with building or issues that is caused by missing dependencies etc and therefore cause problems with the running software, use the [issue tracker](https://git.giaever.org/joachimmg/home-assistant-snap/issues).
-
-### Known problems
-
-The build process reports a dependency issue with Selenium/Webdriver.
-
-```wiki
-Unable to determine library dependencies for 'prime/selenium/webdriver/firefox/x86/x_ignore_nofocus.so'
-Unable to determine library dependencies for 'prime/lib/python3.6/site-packages/selenium/webdriver/firefox/x86/x_ignore_nofocus.so'
+```
+$ cd ~/home-assistant-snap/
 ```
 
-Feel free  to help out solving it!
+and checkout the latest tag (e.g `$ git checkout 0.112.3`) as the master branch might not be functioning.
+
+3. ##### Build & install
+3.1 Make sure you have snapcraft installed: 
+
+```
+sudo snap install snapcraft --classic && hash -r
+```
+
+3.2 Build with 
+
+```
+$ snapcraft
+```
+
+3.3 Install with (change «packagename» to filename of the produced snap).
+
+```
+$ ls -al | grep .snap
+$ snap install --devmode --dangerous <packagename>.snap
+``` 
+
+4. #### Notes on building on a Raspberry Pi
+
+Snapcraft will try to install multipass for you, but on *Raspberry Pi* it will fail. You will have to use an LXD container, before any of the previous steps.
+
+4.1 Install LXD on the Pi:
+
+```
+$ snap install lxd
+```
+
+4.2 Create a container
+
+```
+$ sudo lxd init
+```
+
+4.3 Make sure your user is a member of lxd-group
+
+```
+sudo adduser $USER lxd
+```
+
+_(it might tell that you already are...)_
+
+4.4 Launche a Ubuntu 20.04 container instance
+```
+lxc launch ubuntu:20.04 home-assistant-container
+```
+
+4.5 Go into the shell of the container
+
+```
+lxc exec -- home-assistant-container /bin/bash
+```
+
+4.6 Continue with *step 1*, but replace *step 3.2* with the following:
+
+```
+SNAPCRAFT_BUILD_ENVIRONMENT=host snapcraft
+```
+
+as we have to build within the LXD container itself and not through multipass.

@@ -20,7 +20,6 @@ class PluginImpl(plugins.python.PythonPlugin):
             # Find position where to inject pip uninstall
             if cmd.strip().startswith('[ -f setup.py ]'):
                 xcmds = cmd.split("&&", 1)
-                print("Found ", xcmds)
                 # Inject and force removal
                 cmds[idx] = f"{xcmds[0]} && pip uninstall -y typing && {xcmds[1]}"
         return cmds
