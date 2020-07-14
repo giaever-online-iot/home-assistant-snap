@@ -28,7 +28,7 @@ parts:
     source: https://github.com/home-assistant/core.git
     source-tag: ${SNAPCRAFT_PROJECT_VERSION}
     python-packages:
-      - urllib[secure]
+      - urllib3[secure]
       - setuptools
       - wheel
       - Cython
