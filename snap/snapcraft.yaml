@@ -8,8 +8,8 @@ description: |
 base: core20
 grade: stable
 confinement: strict
-architectures: 
-  - build-on: [arm64, armhf] #, armhf, amd64, ppc64el]
+#architectures: 
+#  - build-on: [arm64, armhf] #, armhf, amd64, ppc64el]
 apps:
   hass:
     command: bin/hass --config $SNAP_DATA
@@ -28,7 +28,7 @@ parts:
     source: https://github.com/home-assistant/core.git
     source-tag: ${SNAPCRAFT_PROJECT_VERSION}
     python-packages:
-      - certifi
+      - urllib[secure]
       - setuptools
       - wheel
       - Cython
