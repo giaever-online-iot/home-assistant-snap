@@ -27,7 +27,7 @@ parts:
     plugin: python-wot-plugin
     source: https://github.com/home-assistant/core.git
     source-tag: ${SNAPCRAFT_PROJECT_VERSION}
-    python-packages:
+    #python-packages:
       #- urllib3[secure]
       #- setuptools
       #- wheel
