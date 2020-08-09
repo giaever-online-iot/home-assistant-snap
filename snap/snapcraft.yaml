@@ -8,8 +8,8 @@ description: |
 base: core20
 grade: stable
 confinement: strict
-#architectures: 
-#  - build-on: [arm64, amd64, ppc64el]
+architectures: 
+  - build-on: [arm64, amd64, ppc64el]
 layout:
   /etc/pip.conf:
     bind: $SNAP_DATA/pip.conf
