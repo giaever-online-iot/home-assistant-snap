@@ -22,5 +22,5 @@ class PluginImpl(plugins.python.PythonPlugin):
             if cmd.strip().startswith('[ -f setup.py ]'):
                 xcmds = cmd.split("&&", 1)
                 # Inject and force removal
-                cmds[idx] = f"{xcmds[0]} && pip uninstall -y typing && {xcmds[1]}"
+                cmds[idx] = f"{xcmds[0]} && pip uninstall -y typing uuid && {xcmds[1]}"
         return cmds
