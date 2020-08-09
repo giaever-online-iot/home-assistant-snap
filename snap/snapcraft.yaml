@@ -8,14 +8,14 @@ description: |
 base: core20
 grade: stable
 confinement: strict
-architectures: 
+architectures:
   - build-on: [arm64, amd64, ppc64el]
 layout:
   /etc/pip.conf:
-    bind: $SNAP_DATA/pip.conf
+    bind-file: $SNAP_DATA/pip.conf
 apps:
   hass:
-    command: bin/hass --config $SNAP_DATA
+    command: bin/hass --config $SNAP_USER_DATA
     daemon: simple
     restart-condition: always
     plugs: 
@@ -65,23 +65,25 @@ parts:
     stage-packages:
       - freeglut3
       - ffmpeg
-      - libavcodec58
-      - libavdevice58
-      - libavfilter7
-      - libavformat58
-      - libavutil56
-      - libffi7
-      - libglib2.0-0
-      - libglu1-mesa
-      - libjpeg8
-      - libopenzwave1.5
-      - libssl1.1
-      - libswscale5
-      - libudev1
-      - libswresample3
-      - libxml2
-      - libxslt1.1
+      # - libavcodec58
+      # - libavdevice58
+      # - libavfilter7
+      # - libavformat58
+      # - libavutil56
+      # - libffi7
+      # - libglib2.0-0
+      # - libglu1-mesa
+      # - libjpeg8
+      # - libopenzwave1.5
+      # - libssl1.1
+      # - libswscale5
+      # - libudev1
+      # - libswresample3
+      # - libxml2
+      # - libxslt1.1
       - zlib1g
+    stage-snap:
+      - python38
     requirements:
       - requirements_all.txt
     constraints:
