@@ -13,17 +13,22 @@ architectures:
 layout:
   /etc/pip.conf:
     bind-file: $SNAP_DATA/pip.conf
+  /etc/openzwave: _
+    bind: $SNAP_DATA/openzwave
 apps:
   hass:
     command: bin/hass --config $SNAP_USER_DATA
     daemon: simple
+    environment:
+      PIP_USER: 1
     restart-condition: always
     plugs: 
       - bluez
       - network
       - network-bind
+      - raw-usb
 
-      # GPIO devices etc..
+      # GPIO devices etc.. (e.g RaZberry GPIO hat)
       - physical-memory-control
 parts:
   homeassistant:
@@ -34,6 +39,8 @@ parts:
       - setuptools
       - wheel
       - Cython
+      - pip
+      - bcrypt
     build-packages:
       - python3
       - python3-dev
@@ -82,9 +89,10 @@ parts:
       # - libxml2
       # - libxslt1.1
       - zlib1g
-    stage-snap:
-      - python38
     requirements:
       - requirements_all.txt
     constraints:
       - homeassistant/package_constraints.txt
+    override-build: |
+      snapcraftctl build
+      sed -i 's/include-system-site-packages = false/include-system-site-packages = true/g' $SNAPCRAFT_PART_INSTALL/pyvenv.cfg
