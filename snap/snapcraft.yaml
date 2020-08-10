@@ -13,11 +13,11 @@ architectures:
 layout:
   /etc/pip.conf:
     bind-file: $SNAP_DATA/pip.conf
-  /etc/openzwave: _
-    bind: $SNAP_DATA/openzwave
+  /etc/openzwave:
+    bind: $SNAP/openzwave
 apps:
   hass:
-    command: bin/hass --config $SNAP_USER_DATA
+    command: bin/hass --config $SNAP_DATA
     daemon: simple
     environment:
       PIP_USER: 1
@@ -27,7 +27,6 @@ apps:
       - network
       - network-bind
       - raw-usb
-
       # GPIO devices etc.. (e.g RaZberry GPIO hat)
       - physical-memory-control
 parts:
