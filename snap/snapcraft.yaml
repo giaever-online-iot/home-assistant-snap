@@ -78,7 +78,7 @@ parts:
       # - libavutil56
       # - libffi7
       # - libglib2.0-0
-      # - libglu1-mesa
+      - libglu1-mesa
       # - libjpeg8
       # - libopenzwave1.5
       # - libssl1.1
