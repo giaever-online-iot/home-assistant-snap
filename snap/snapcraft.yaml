@@ -9,7 +9,7 @@ base: core20
 grade: stable
 confinement: strict
 architectures:
-  - build-on: [arm64, amd64, ppc64el]
+  - build-on: [arm64, ppc64el]
 layout:
   /etc/pip.conf:
     bind-file: $SNAP_DATA/pip.conf
@@ -60,6 +60,7 @@ parts:
       - libffi-dev
       - libglib2.0-dev
       - libglu1-mesa-dev
+      - libgpiod-dev
       - libjpeg-dev
       - libopenzwave1.5-dev
       - libssl-dev
