@@ -41,6 +41,7 @@ apps:
       - raw-usb
       # GPIO devices etc.. (e.g RaZberry GPIO hat)
       - physical-memory-control
+      - plugs
 
 parts:
   homeassistant:
