@@ -15,11 +15,17 @@ layout:
     bind: $SNAP/openzwave
 
 slots:
-  lib-hacs:
+  components:
     interface: content
-    content: lib-hacs
+    content: components
     write: 
       - $SNAP_DATA/custom_components
+
+plugs:
+  certs:
+    interface: content
+    content: certs
+    target: $SNAP_DATA/certs
 
 apps:
   hass:
