@@ -1,5 +1,5 @@
 name: home-assistant-snap
-version: '0.114.0'
+version: '0.114.2'
 summary: Open source home automation that puts local control and privacy first
 description: |
     Home Assistant is a home automation platform running on Python 3. 
@@ -8,6 +8,7 @@ description: |
 base: core20
 grade: stable
 confinement: strict
+
 layout:
   /etc/pip.conf:
     bind-file: $SNAP_DATA/pip.conf
@@ -41,7 +42,6 @@ apps:
       - raw-usb
       # GPIO devices etc.. (e.g RaZberry GPIO hat)
       - physical-memory-control
-      - certs
     slots: 
       - components
 
