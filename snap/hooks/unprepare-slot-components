@@ -1,0 +1,5 @@
+#!/urs/bin/env bash
+
+CC="${SNAP_DATA}/custom_components"
+echo "Removing ${CC}"
+rm -rf "${CC}"

@@ -21,12 +21,11 @@ slots:
     content: components
     write: 
       - $SNAP_DATA/custom_components
-
-plugs:
   certs:
     interface: content
     content: certs
-    target: $SNAP_DATA/certs
+    write: 
+      - $SNAP_DATA/certs
 
 apps:
   hass:
@@ -96,3 +95,8 @@ parts:
     override-build: |
       snapcraftctl build
       sed -i 's/include-system-site-packages = false/include-system-site-packages = true/g' $SNAPCRAFT_PART_INSTALL/pyvenv.cfg
+  internal:
+    plugin: nil
+    stage-packages:
+      - uuid
+      - gpg

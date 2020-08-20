@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+CC="${SNAP_DATA}/custom_components"
+
+if ! [[ -d "${CC}" ]]; then
+    echo "Creating dir ${CC}"
+    mkdir "${CC}"
+fi

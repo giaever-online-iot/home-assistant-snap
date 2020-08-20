@@ -1,4 +1,0 @@
-#!/usr/bin/env bash
-
-echo "Creating dir $SNAP_DATA/custom_components"
-mkdir $SNAP_DATA/custom_components
