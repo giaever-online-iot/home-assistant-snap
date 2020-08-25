@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+source "${SNAP}/init"
+logger "Disconnect ${SNAP_NAME}:certs (uuid: ${UUID})"
+
+logger "TODO: Remove certificate?"
+logger "TODO: Remove GPG-key?"
+logger "TODO: Restart HASS?"
+
+rm -rf "${SSL_DIR}"
+snapctl restart "${SNAP_NAME}.hass"

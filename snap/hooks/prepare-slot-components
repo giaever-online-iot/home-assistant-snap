@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 
+logger "Connect 'custom_components' (HACS) to ${SNAP_NAME}"
 CC="${SNAP_DATA}/custom_components"
 
 if ! [[ -d "${CC}" ]]; then
-    echo "Creating dir ${CC}"
+    logger "Creating dir ${CC}"
     mkdir "${CC}"
 fi

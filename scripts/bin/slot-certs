@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+source "${SNAP}/init"
+
+exec $@

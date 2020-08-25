@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+
+CERTS_DIR="${SNAP_DATA}/certs"
+SSL_DIR="${SNAP_DATA}/.ssl"
+UUID_FILE="${SNAP_DATA}/.install-id"
+
+if ! [[ -f "${UUID_FILE}" ]]; then
+    logger "Generate UUID for ${SNAP_NAME}"
+    uuid > "${UUID_FILE}"
+    logger "${SNAP_NAME} (uuid: `cat ${UUID_FILE}`)"
+fi
+
+UUID=`cat ${UUID_FILE}`
+
+DOMAIN=`snapctl get domain`
+if [ -z "${DOMAIN}" ]; then
+    DOMAIN="--not-set"
+fi
+
+snapctl set domain="${DOMAIN}"
+
+function gpg_start_agent {
+    gpg-agent 2> /dev/null
+    if [ $? -ne 0 ]; then
+        logger "GPG-agent not here"
+        gpg-agent --daemon 2> /dev/null
+        if [ $? -eq 0 ]; then
+            logger "GPG-agent started"
+            return 0
+        fi
+        logger "Failed starting GPG-agent"
+        return 1
+    fi
+    return 0
+}
+
+function gpg_close_agent {
+    PID=`ps -T | grep gpg-agent | head -n 1 | cut -d' ' -f1`
+    if [ -n "${PID}" ]; then
+        logger "Kill GPG-agent: ${PID}"
+        kill -9 "${PID}" >> /dev/null
+    fi
+}

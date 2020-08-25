@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+
+source "${SNAP}/init"
+
+DOMAIN=`snapctl get domain`
+
+if [ -z "${DOMAIN}" ]; then
+    DOMAIN="--not-set"
+else
+    snapctl is-connected certs
+    if [ $? -eq 0 ]; then
+        HIT=`ls -Al "${SNAP_DATA}/certs/" | grep "${UUID}_${DOMAIN}" | wc -l`
+        if [ "${HIT}" -eq 0 ]; then
+            echo "No certificate available for"
+            echo "Snap: ${SNAP_NAME}"
+            echo "UUID: ${UUID}"
+            echo "Domain: ${DOMAIN}"
+            echo "See 'acme-sh' (snap install acme-sh)"
+            DOMAIN="--not-set"
+        fi
+    else 
+        "Slot 'certs' not connected"
+        echo "See 'acme-sh' (snap install acme-sh)"
+        echo "then 'snap connect acme-sh:certs ${SNAP_DATA}:certs'"
+        DOMAIN='--not-set'
+    fi 
+fi
+
+snapctl set domain="${DOMAIN}"
