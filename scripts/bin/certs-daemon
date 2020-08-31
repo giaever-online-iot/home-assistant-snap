@@ -12,14 +12,22 @@ if [ "${DOMAIN}" != "--not-set" ]; then
         exit 1
     fi
 
-    CERT_MATCH_NAME="${UUID}_${DOMAIN}"
+    readarray -d '' DOMAINS < <(find "${CERTS_DIR}" -type d -name "${DOMAIN}" -print0)
+    logger "Certificate (${DOMAIN}) available for ${SNAP_NAME}:${UUID}"
 
-    readarray -d '' CERTIFICATES < <(find ${CERTS_DIR} -type f -name "*${CERT_MATCH_NAME}*" -print0)
-    logger "`expr ${#CERTIFICATES[@]} / 4` available for ${CERT_MATCH_NAME}"
-
-    if [ "${#CERTIFICATES[@]}" -ne 0 ]; then
+    if [ "${#DOMAINS[@]}" -ne 0 ]; then
+        DOMAIN_DIR="${DOMAINS[0]}"
         gpg_start_agent
         i=0
+        LAST_EDITED=`stat "${DOMAIN_DIR}/.time" --format="%Y" 2> /dev/null || echo 0`
+        ORIG_EDITED=`stat "${SSL_DIR}/.time" --format="%Y" 2> /dev/null || echo 0`
+
+        if [ "${LAST_EDITED}" -le "${ORIG_EDITED}" ]; then 
+            logger "Certificate for ${DOMAIN} is not changed, exiting"
+            exit 1
+        fi
+
+        readarray -d '' CERTIFICATES < <(find "${DOMAIN_DIR}" -type f -name "*.gpg" -print0)
         for CERTIFICATE in "${CERTIFICATES[@]}"; do
             DEST="${SSL_DIR}/`basename "${CERTIFICATE}" ".gpg"`"
             ORIG=""
@@ -36,16 +44,10 @@ if [ "${DOMAIN}" != "--not-set" ]; then
             fi
         done
         if [ "${i}" -ne 0 ]; then
+            cp -f "${DOMAIN_DIR}/.time" "${SSL_DIR}/.time"
             logger "Certificates (${DOMAIN}) changed for ${SNAP_NAME}-${UUID}, restart"
             snapctl restart "${SNAP_NAME}.hass"
         fi
         gpg_close_agent
-    fi
-else
-    readarray -d '' CERTIFICATES < <(find ${CERTS_DIR} -type f -name "*${UUID}*" -print0)
-
-    if [ "${#CERTIFICATES[@]}" -ne 0 ]; then
-        logger "> `expr ${#CERTIFICATES[@]} / 4` available for ${SNAP_NAME} (uuid: ${UUID})"
-        logger "> Consider setting your domain with 'sudo snap set ${SNAP_NAME} domain=\"domain.tld\"'"
     fi
 fi
