@@ -1,26 +1,26 @@
 #!/usr/bin/env bash
-source "${SNAP}/init"
-
-DOMAIN=`snapctl get domain`
 
 if [ "${USER}" != "root" ]; then
     echo "Run as root!"
     exit 1
 fi
 
+source "${SNAP}/init"
+DOMAIN=`snapctl get domain`
+
 echo "See log (journal -exf --grep=${SNAP_NAME}) for result"
 if [ "${DOMAIN}" != "--not-set" ]; then
     snapctl is-connected certs
     if [ $? -ne 0 ]; then
-        logger "${SNAP_NAME} is disconnected (uuid: ${UUID})"
-        logger "${SNAP_NAME} domain set to '--not-set'"
-        logger "See snap 'acme-sh' and connect acme-sh:certs"
+        logger "${SNAP_NAME}: Is disconnected (uuid: ${UUID})"
+        logger "${SNAP_NAME}: Domain set to '--not-set'"
+        logger "${SNAP_NAME}: See snap 'acme-sh' and connect acme-sh:certs"
         snapctl set domain="--not-set"
         exit 0
     fi
 
     readarray -d '' DOMAINS < <(find "${CERTS_DIR}" -type d -name "${DOMAIN}" -print0)
-    logger "Certificate (${DOMAIN}) available for ${SNAP_NAME}:${UUID}"
+    logger "${SNAP_NAME}: Certificate (${DOMAIN}) available for ${SNAP_NAME}:${UUID}"
 
     if [ "${#DOMAINS[@]}" -ne 0 ]; then
         DOMAIN_DIR="${DOMAINS[0]}"
@@ -30,7 +30,7 @@ if [ "${DOMAIN}" != "--not-set" ]; then
         ORIG_EDITED=`stat "${SSL_DIR}/.time" --format="%Y" 2> /dev/null || echo 0`
 
         if [ "${LAST_EDITED}" -le "${ORIG_EDITED}" ]; then 
-            logger "Certificate for ${DOMAIN} is not changed, exiting"
+            logger "${SNAP_NAME}: Certificate for ${DOMAIN} is not changed, exiting"
             exit 0
         fi
 
@@ -52,7 +52,7 @@ if [ "${DOMAIN}" != "--not-set" ]; then
         done
         if [ "${i}" -ne 0 ]; then
             cp -f "${DOMAIN_DIR}/.time" "${SSL_DIR}/.time"
-            logger "Certificates (${DOMAIN}) changed for ${SNAP_NAME}-${UUID}, restart"
+            logger "${SNAP_NAME}: Certificates (${DOMAIN}) changed for ${SNAP_NAME}-${UUID}, restart"
             snapctl restart "${SNAP_NAME}.hass"
         fi
         gpg_close_agent
