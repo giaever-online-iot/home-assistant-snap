@@ -9,7 +9,7 @@ if [ "${DOMAIN}" != "--not-set" ]; then
         logger "${SNAP_NAME} is disconnected (uuid: ${UUID})"
         logger "${SNAP_NAME} domain is set to '--not-set'"
         snapctl set domain="--not-set"
-        exit 1
+        exit 0
     fi
 
     readarray -d '' DOMAINS < <(find "${CERTS_DIR}" -type d -name "${DOMAIN}" -print0)
@@ -24,7 +24,7 @@ if [ "${DOMAIN}" != "--not-set" ]; then
 
         if [ "${LAST_EDITED}" -le "${ORIG_EDITED}" ]; then 
             logger "Certificate for ${DOMAIN} is not changed, exiting"
-            exit 1
+            exit 0
         fi
 
         readarray -d '' CERTIFICATES < <(find "${DOMAIN_DIR}" -type f -name "*.gpg" -print0)
