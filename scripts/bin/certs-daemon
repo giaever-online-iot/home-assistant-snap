@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-if [ "${USER}" != "root" ]; then
+if [ `id -gn` != "root" ]; then
     echo "Run as root!"
     exit 1
 fi
