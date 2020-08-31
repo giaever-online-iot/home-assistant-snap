@@ -61,6 +61,13 @@ apps:
     plugs:
       - network
       - network-bind
+  refresh-certs:
+    command: bin/certs-daemon
+    slots:
+      - certs
+    plugs:
+      - network
+      - network-bind
 
 hooks:
   prepare-slot-certs:

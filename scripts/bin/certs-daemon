@@ -3,11 +3,18 @@ source "${SNAP}/init"
 
 DOMAIN=`snapctl get domain`
 
+if [ "${USER}" != "root" ]; then
+    echo "Run as root!"
+    exit 1
+fi
+
+echo "See log (journal -exf --grep=${SNAP_NAME}) for result"
 if [ "${DOMAIN}" != "--not-set" ]; then
     snapctl is-connected certs
     if [ $? -ne 0 ]; then
         logger "${SNAP_NAME} is disconnected (uuid: ${UUID})"
-        logger "${SNAP_NAME} domain is set to '--not-set'"
+        logger "${SNAP_NAME} domain set to '--not-set'"
+        logger "See snap 'acme-sh' and connect acme-sh:certs"
         snapctl set domain="--not-set"
         exit 0
     fi
