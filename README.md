@@ -24,7 +24,7 @@ and we're working on a solution to extend the installation further so you can ad
 
 Please file all issues using the main git-repository found at [git.giaever.org](https://git.giaever.org/joachimmg/home-assistant-snap/issues).
 
-### Install from The Snap Store
+### Install from The Snap Store (Recommended)
 
 Make sure you have Snapd installed on your system. See [Installing snapd](https://snapcraft.io/docs/installing-snapd) for a list of distributions with and without snap pre-installed, including installation instructions for those that have not.
 
@@ -34,7 +34,7 @@ We recommend that your download a pre-built version of this snap from [The Snap 
 
 1. **Clone this repo and checkout the latest tag**
 
-```
+```bash
 $ git clone https://git.giaever.org/joachimmg/home-assistant-snap.git
 
 # Go into directory
