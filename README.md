@@ -49,13 +49,13 @@ _**NOTE**: You can find the latest tag with `git ls-remote --tags origin`_
 
 Make sure you have snapd (see [Installing snapd](https://snapcraft.io/docs/installing-snapd)) and latest version of Snapcraft. Install Snapcraft with
 
-```
+```bash
 $ sudo snap install snapcraft --classic
 ```
 
 Or update with
 
-```
+```bash
 $ sudo snap refresh snapcraft
 ```
 
@@ -63,7 +63,7 @@ $ sudo snap refresh snapcraft
 
 From the «home-assistant-snap»-directory, run
 
-```
+```bash
 $ snapcraft
 ```
 
@@ -75,32 +75,32 @@ Snapcraft will try to install multiplass and build the snap for you, but on *Ras
 
 Install LXD and create a container
 
-```
+```bash
 $ snap install lxd
 $ snap lxd init
 ```
 
 Make sure your user is a member of lxd-group
 
-```
+```bash
 $ sudo adduser $USER lxd
 ```
 
 Launch an Ubuntu 20.04 container instance
 
-```
+```bash
 $ lxc launch ubuntu:20.04 home-assistant-snap
 ```
 
 Make sure you're in the «home-assistant-snap»-directory and go into the shell of your newly created container
 
-```
+```bash
 $ lxc exec -- home-assistant-snap /bin/bash
 ```
 
 and run
 
-```
+```bash
 $ SNAPCRAFT_BUILD_ENVIRONMENT=host snapcraft
 ```
 
@@ -109,5 +109,5 @@ when the build is complete, you'll have to exit the shell and pull the snap-file
 3. **Install new built snap**
 
 ```
-$ sudo snap install --dangerous
+$ sudo snap install ./home-assistant-snap_<source-tag>.snap --dangerous
 ```
