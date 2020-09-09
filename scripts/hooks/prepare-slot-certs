@@ -2,12 +2,6 @@
 
 source "${SNAP}/init"
 
-if ! [[ -d "${CERTS_DIR}" ]]; then
-    logger "Creating dir ${CERTS_DIR}"
-    mkdir "${CERTS_DIR}"
-    chmod 0700 "${CERTS_DIR}"
-fi
-
 if ! [[ -d "${SSL_DIR}" ]]; then
     logger "Creating local cert dir ${SSL_DIR}"
     mkdir "${SSL_DIR}"

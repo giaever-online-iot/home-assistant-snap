@@ -35,10 +35,7 @@ slots:
   configurations:
     interface: content
     write:
-      - $SNAP_DATA/configuration.yaml
-      - $SNAP_DATA/scenes.yaml
-      - $SNAP_DATA/scripts.yaml
-      - $SNAP_DATA/configurations
+      - $SNAP_DATA
 
 apps:
   hass:
