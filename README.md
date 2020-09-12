@@ -20,13 +20,31 @@ Based on this intention we have choosen a strict confinement, which should work 
 * [acme.sh](https://git.giaever.org/joachimmg/acme-sh) (SSL): probably the easiest & smartest shell script to automatically issue & renew the free certificates from Let's Encrypt.
 * [ddclient](https://git.giaever.org/joachimmg/ddclient-snap): client used to update dynamic DNS entries for accounts on many dynamic DNS services.
 
-and we're working on a solution to extend the installation further so you can add additional libaries (curl, wget, ssh) that you will need to be able to build your system as you want.
+We're also working on a solution to extend the installation further so you can add additional libaries (curl, wget, ssh) that you will need to be able to build your system as you want.
 
 Please file all issues using the main git-repository found at [git.giaever.org](https://git.giaever.org/joachimmg/home-assistant-snap/issues).
 
+## Frequently asked questions
+
+* **How do I configure Home Assistant from this snap**
+    * If your using Home Assistant on a desktop or server edition you will be able to use your favourite text editor. The configurations files is store in `/var/snap/home-assistant-snap/current`. You will need to have root access.
+    * If you can't locate the configuration files (it may differ on some distributions), log into the daemon' shell with `sudo snap run --shell home-assistant-snap.hass` and execute `echo $SNAP_DATA`. This should return a path similar that is mentioned above, but containing a digit (the revision number of the current running version). When you have figured out the path, it's wise to exchange the `revision number` with `current`, as this number will change frequently and `current` will always be linked to the currently used revision.
+    * If you don't have root access or want to be able to update the configurations through a web solution, have a look at the [home-assistant-configurator](https://git.giaever.org/joachimmg/home-assistant-configurator). 
+* **How can I secure my Home Assistant with SSL (HTTPS)?**
+    * Install [acme-sh](https://git.giaever.org/joachimmg/acme-sh) and connect `acme-sh`'s and home-assistant-snap's slot/plug with `snap connect acme-sh:certs home-assistant-snap:certs`. 
+    * After you have issued the certificate, you'll find the decrypted files in `/var/snap/home-assistant-snap/current/.ssl`. You'll then add a [http-entry](https://www.home-assistant.io/integrations/http/) in your configuration file.
+    * Home Assistant is configured to scan for updated certificates, replace them and to restart to use the new version. 
+* **How do I use dynamic DNS?**
+    * Use `ddclient-snap`, see: [cclient-snap](https://git.giaever.org/joachimmg/ddclient-snap)
+
+## Build and installation
 ### Install from The Snap Store (Recommended)
 
 Make sure you have Snapd installed on your system. See [Installing snapd](https://snapcraft.io/docs/installing-snapd) for a list of distributions with and without snap pre-installed, including installation instructions for those that have not.
+
+```bash
+$ snap install home-assistant-snap
+```
 
 ### Build this snap from source
 
