@@ -2,18 +2,15 @@ name: home-assistant-snap
 version: '0.114.4'
 summary: Open source home automation that puts local control and privacy first
 description: |
-    Home Assistant is a home automation platform running on Python 3. 
-    It is able to track and control all devices at home and offer a 
-    platform for automating control.
+  Home Assistant is a home automation platform running on Python 3. 
+  It is able to track and control all devices at home and offer a 
+  platform for automating control.
 
-    This version supports integrations with
-    - HACS: see 'home-assistant-hacs' (custom_components)
-    - acme.sh: see 'acme-sh' (SSL-certificates)
-
-    Also see 'ddclient-snap' to easily update your DNS.
+  Please see official docs: https://git.giaever.org/joachimmg/home-assistant-snap
 base: core20
 grade: stable
 confinement: strict
+license: Apache-2.0
 
 layout:
   /etc/pip.conf:
