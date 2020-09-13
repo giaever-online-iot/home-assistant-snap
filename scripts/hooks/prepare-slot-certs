@@ -40,3 +40,4 @@ snapctl set :certs uuid="${UUID}"
 snapctl set :certs pkey="${KEY}"
 
 logger "${SNAP_NAME}:certs (uuid: ${UUID}) prepared"
+logger "KEY: ${KEY}"

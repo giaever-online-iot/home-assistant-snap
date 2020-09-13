@@ -34,6 +34,16 @@ slots:
     write:
       - $SNAP_DATA
 
+hooks:
+  install:
+    plugs:
+      - network
+      - network-bind
+  prepare-slot-certs:
+    plugs:
+      - network
+      - network-bind
+
 apps:
   hass:
     command: bin/hass --config $SNAP_DATA
@@ -66,12 +76,6 @@ apps:
     command: bin/certs-daemon
     slots:
       - certs
-    plugs:
-      - network
-      - network-bind
-
-hooks:
-  prepare-slot-certs:
     plugs:
       - network
       - network-bind
@@ -138,6 +142,7 @@ parts:
       - gpg
       - gpg-agent
     organize:
+      install: snap/hooks/install
       configure: snap/hooks/configure
       post-refresh: snap/hooks/post-refresh
       prepare-slot-certs: snap/hooks/prepare-slot-certs
