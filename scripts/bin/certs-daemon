@@ -8,32 +8,30 @@ fi
 source "${SNAP}/init"
 DOMAIN=`snapctl get domain`
 
-echo "See log (journal -exf --grep=${SNAP_NAME}) for result"
+echo "See log (journal -exf --grep=snap.${SNAP_NAME}*) for result"
 if [ "${DOMAIN}" != "--not-set" ]; then
     snapctl is-connected certs
+
     if [ $? -ne 0 ]; then
-        logger "${SNAP_NAME}: Is disconnected (uuid: ${UUID})"
-        logger "${SNAP_NAME}: Domain set to '--not-set'"
-        logger "${SNAP_NAME}: See snap 'acme-sh' and connect acme-sh:certs"
         snapctl set domain="--not-set"
         exit 0
     fi
 
     readarray -d '' DOMAINS < <(find "${CERTS_DIR}" -type d -name "${DOMAIN}" -print0)
-    logger "${SNAP_NAME}: Certificate (${DOMAIN}) available for ${SNAP_NAME}:${UUID}"
 
     if [ "${#DOMAINS[@]}" -ne 0 ]; then
         DOMAIN_DIR="${DOMAINS[0]}"
-        gpg_start_agent
-        i=0
         LAST_EDITED=`stat "${DOMAIN_DIR}/.time" --format="%Y" 2> /dev/null || echo 0`
         ORIG_EDITED=`stat "${SSL_DIR}/.time" --format="%Y" 2> /dev/null || echo 0`
 
         if [ "${LAST_EDITED}" -le "${ORIG_EDITED}" ]; then 
-            logger "${SNAP_NAME}: Certificate for ${DOMAIN} is not changed, exiting"
+            logger "${SNAP_NAME}: Certificate for ${DOMAIN} is not changed"
             exit 0
         fi
 
+        gpg_start_agent
+
+        i=0
         readarray -d '' CERTIFICATES < <(find "${DOMAIN_DIR}" -type f -name "*.gpg" -print0)
         for CERTIFICATE in "${CERTIFICATES[@]}"; do
             DEST="${SSL_DIR}/`basename "${CERTIFICATE}" ".gpg"`"
@@ -56,5 +54,7 @@ if [ "${DOMAIN}" != "--not-set" ]; then
             snapctl restart "${SNAP_NAME}.hass"
         fi
         gpg_close_agent
+    else
+        logger "No certificate for ${DOMAIN} for ${SNAP_NAME}"
     fi
 fi
