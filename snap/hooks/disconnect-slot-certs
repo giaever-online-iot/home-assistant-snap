@@ -4,4 +4,4 @@ source "${SNAP}/init"
 logger "Disconnect ${SNAP_NAME}:certs (uuid: ${UUID})"
 
 rm -rf "${SSL_DIR}"
-snapctl restart "${SNAP_NAME}.hass"
+snapctl restart "${SNAP_NAME}"

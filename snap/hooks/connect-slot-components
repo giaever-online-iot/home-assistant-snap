@@ -1,3 +1,2 @@
 #!/usr/bin/env bash
-
-snapctl restart "${SNAP_NAME}.hass"
+snapctl restart "${SNAP_NAME}"

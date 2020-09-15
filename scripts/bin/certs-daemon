@@ -51,7 +51,7 @@ if [ "${DOMAIN}" != "--not-set" ]; then
         if [ "${i}" -ne 0 ]; then
             cp -f "${DOMAIN_DIR}/.time" "${SSL_DIR}/.time"
             logger "${SNAP_NAME}: Certificates (${DOMAIN}) changed for ${SNAP_NAME}-${UUID}, restart"
-            snapctl restart "${SNAP_NAME}.hass"
+            snapctl restart "${SNAP_NAME}"
         fi
         gpg_close_agent
     else
