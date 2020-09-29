@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+snapctl is-connected bin
+
+if [ $? -eq 0 ]; then
+    readarray -d '' PATHS < <(find $SNAP -maxdepth 2 -type d -name bin -path "$SNAP/shared-bin*" -print0)
+
+    if [ "${#PATHS[@]}" -ne 0 ]; then
+        for TPATH in "${PATHS[@]}"; do
+            PATH="${PATH}:${TPATH}"
+        done
+    fi
+fi
+
+eval $@
