@@ -18,6 +18,12 @@ layout:
   /etc/openzwave:
     bind: $SNAP/openzwave
 
+plugs:
+  bin:
+    interface: content
+    content: executables
+    target: $SNAP/shared-bin
+
 slots:
   components:
     interface: content
