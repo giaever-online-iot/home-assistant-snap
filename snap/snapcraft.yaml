@@ -18,6 +18,12 @@ layout:
   /etc/openzwave:
     bind: $SNAP/openzwave
 
+plugs:
+  bin:
+    interface: content
+    content: executables
+    target: $SNAP/shared-bin
+
 slots:
   components:
     interface: content
@@ -47,6 +53,8 @@ hooks:
 apps:
   home-assistant-snap:
     command: bin/hass --config $SNAP_DATA
+    command-chain:
+      - bin/plug-bin
     daemon: simple
     environment:
       PIP_USER: 1
@@ -56,7 +64,7 @@ apps:
       - network
       - network-bind
       - raw-usb
-      # GPIO devices etc.. (e.g RaZberry GPIO hat)
+      # GPIO devices etc.. (e.g RaZberry HAT)
       - physical-memory-control
     slots: 
       - components
@@ -146,6 +154,7 @@ parts:
       configure: snap/hooks/configure
       post-refresh: snap/hooks/post-refresh
       prepare-slot-certs: snap/hooks/prepare-slot-certs
+      connect-plug-bin: snap/hooks/connect-plug-bin
   bins:
     plugin: dump
     source: ./scripts/bin
@@ -157,3 +166,5 @@ parts:
     plugin: dump
     source: ./scripts/config
     source-type: local
+    organize:
+      plug-bin: bin/plug-bin
