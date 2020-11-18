@@ -66,6 +66,7 @@ apps:
       - raw-usb
       # GPIO devices etc.. (e.g RaZberry HAT)
       - physical-memory-control
+      - removable-media
     slots: 
       - components
   check-config:
