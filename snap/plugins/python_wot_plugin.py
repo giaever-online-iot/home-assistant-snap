@@ -3,6 +3,7 @@
 import snapcraft
 import snapcraft.plugins.v2 as plugins
 from typing import Any, Dict, List, Set
+import os
 
 """
 See snapcraft.plugins.v2.python.PythonPlugin

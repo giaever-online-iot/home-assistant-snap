@@ -12,31 +12,4 @@ fi
 
 UUID=`cat ${UUID_FILE}`
 
-DOMAIN=`snapctl get domain`
-if [ -z "${DOMAIN}" ]; then
-    DOMAIN="--not-set"
-fi
-
-snapctl set domain="${DOMAIN}"
-
-function gpg_start_agent {
-    gpg-agent 2> /dev/null
-    if [ $? -ne 0 ]; then
-        logger "GPG-agent not here"
-        gpg-agent --daemon 2> /dev/null
-        if [ $? -eq 0 ]; then
-            logger "GPG-agent started"
-        else
-            logger "Failed starting GPG-agent, trying anyway"
-        fi
-    fi
-    return 0
-}
-
-function gpg_close_agent {
-    PID=`ps -T | grep gpg-agent | head -n 1 | cut -d' ' -f1`
-    if [ -n "${PID}" ]; then
-        logger "Kill GPG-agent: ${PID}"
-        kill -9 "${PID}" >> /dev/null
-    fi
-}
+logger "${SNAP_NAME} does not support ACME.sh anymore. Please look into using Lets Encrypt or a proxy for SSL support."

@@ -1,5 +1,5 @@
 name: home-assistant-snap
-version: '2021.1.5'
+version: '2021.2.0'
 summary: Open source home automation that puts local control and privacy first
 description: |
   Home Assistant is a home automation platform running on Python 3. 
@@ -30,25 +30,10 @@ slots:
     content: components
     write: 
       - $SNAP_DATA/custom_components
-  certs:
-    interface: content
-    content: certs
-    write: 
-      - $SNAP_DATA/certs
   configurations:
     interface: content
     write:
       - $SNAP_DATA
-
-hooks:
-  install:
-    plugs:
-      - network
-      - network-bind
-  prepare-slot-certs:
-    plugs:
-      - network
-      - network-bind
 
 apps:
   home-assistant-snap:
@@ -71,27 +56,10 @@ apps:
       - components
   check-config:
     command: bin/hass --script check_config
-  renew-cert:
-    command: bin/certs-daemon
-    daemon: oneshot
-    restart-condition: always
-    timer: 00:00-24:00/24
-    slots:
-      - certs
-    plugs:
-      - network
-      - network-bind
-  force-renew-cert:
-    command: bin/certs-daemon
-    slots:
-      - certs
-    plugs:
-      - network
-      - network-bind
 
 parts:
   homeassistant:
-    plugin: python-wot-plugin
+    plugin: python #-wot-plugin
     source: https://github.com/home-assistant/core.git
     source-tag: ${SNAPCRAFT_PROJECT_VERSION}
     python-packages:
@@ -99,6 +67,8 @@ parts:
       - wheel
       - Cython
       - pip
+    # build-environment:
+    #   - SNAPCRAFT_PYTHON_INTERPRETER: python3.9
     build-packages:
       - python3
       - python3-dev
@@ -146,23 +116,11 @@ parts:
     source-type: local
     stage-packages:
       - uuid
-      - libossp-uuid16
-      - libassuan0
-      - gpg
-      - gpg-agent
     organize:
       install: snap/hooks/install
       configure: snap/hooks/configure
       post-refresh: snap/hooks/post-refresh
-      prepare-slot-certs: snap/hooks/prepare-slot-certs
       connect-plug-bin: snap/hooks/connect-plug-bin
-  bins:
-    plugin: dump
-    source: ./scripts/bin
-    source-type: local
-    organize:
-      slot-certs: bin/slot-certs
-      certs-daemon: bin/certs-daemon
   config:
     plugin: dump
     source: ./scripts/config
