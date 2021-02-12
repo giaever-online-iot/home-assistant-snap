@@ -1,5 +1,5 @@
 name: home-assistant-snap
-version: '2021.2.2'
+version: '2021.2.3'
 summary: Open source home automation that puts local control and privacy first
 description: |
   Home Assistant is a home automation platform running on Python 3. 
@@ -11,6 +11,12 @@ base: core20
 grade: stable
 confinement: strict
 license: Apache-2.0
+
+architectures:
+  - build-on: amd64
+  - build-on: arm64
+  - build-on: armhf
+  - build-on: ppc64el
 
 layout:
   /etc/pip.conf:
