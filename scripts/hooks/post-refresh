@@ -2,3 +2,7 @@
 
 source "${SNAP}/init"
 logger "Running post-refresh ${SNAP_NAME} (uuid: ${UUID})"
+
+logger "Running config test"
+set -e
+$SNAP/bin/hass --script check_config --config "${SNAP_DATA}"

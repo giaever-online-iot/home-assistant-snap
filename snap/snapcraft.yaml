@@ -7,6 +7,8 @@ description: |
   platform for automating control.
 
   Please see official docs: https://git.giaever.org/joachimmg/home-assistant-snap
+
+  See `snap connections home-assistant-snap` for necessary plugs.
 base: core20
 grade: stable
 confinement: strict
@@ -61,7 +63,7 @@ apps:
     slots: 
       - components
   check-config:
-    command: bin/hass --script check_config
+    command: bin/hass --script check_config --config $SNAP_DATA -i
 
 parts:
   homeassistant:
