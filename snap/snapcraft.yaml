@@ -1,14 +1,16 @@
 name: home-assistant-snap
-version: '2021.3.0b5'
+version: '2021.3.0b7'
 summary: Open source home automation that puts local control and privacy first
 description: |
   Home Assistant is a home automation platform running on Python 3. 
   It is able to track and control all devices at home and offer a 
-  platform for automating control.
+  platform for automating control. 
 
-  Please see official docs: https://git.giaever.org/joachimmg/home-assistant-snap
+  Your new installation will be available through your browser at http://localhost:8123/
 
-  See `snap connections home-assistant-snap` for necessary plugs.
+  Please see official docs: https://git.giaever.org/joachimmg/home-assistant-snap and https://community.home-assistant.io for help on configuration etc.
+
+  See `snap connections home-assistant-snap` for necessary plugs (such as access to USB etc).
 base: core20
 grade: stable
 confinement: strict
