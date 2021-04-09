@@ -3,23 +3,22 @@
 source "${SNAP}/init"
 logger "Running post-refresh ${SNAP_NAME} (uuid: ${UUID})"
 
-# Temporarely removed
-# logger "Running config test"
-# set -e
-# CC="${SNAP_DATA}/custom_components"
-# CCT="${SNAP_DATA}/.custom_components"
-#
-# if [ -d "${CC}" ]; then
-#     logger "Disabling custom components"
-#     mv "${CC}" "${CCT}"
-# fi
-#
-# $SNAP/bin/hass --script check_config --config "${SNAP_DATA}"
-# RES=$?
-#
-# if [ -d "${CC}" ]; then
-#     logger "Enabling custom components"
-#     mv "${CCT}" "${CC}"
-# fi
-#
-# exit $RES
+logger "Running config test"
+set -e
+CC="${SNAP_DATA}/custom_components"
+CCT="${SNAP_DATA}/.custom_components"
+
+if [ -d "${CC}" ]; then
+    logger "Disabling custom components"
+    mv "${CC}" "${CCT}"
+fi
+
+$SNAP/bin/hass --script check_config --config "${SNAP_DATA}"
+RES=$?
+
+if [ -d "${CC}" ]; then
+    logger "Enabling custom components"
+    mv "${CCT}" "${CC}"
+fi
+
+exit $RES
