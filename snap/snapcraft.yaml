@@ -1,5 +1,5 @@
 name: home-assistant-snap
-version: '2021.4.3'
+version: '2021.4.4'
 summary: Open source home automation that puts local control and privacy first
 description: |
   Home Assistant is a home automation platform running on Python 3. 
