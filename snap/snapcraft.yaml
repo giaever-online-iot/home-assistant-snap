@@ -121,6 +121,10 @@ parts:
     constraints:
       - homeassistant/package_constraints.txt
     override-build: |
+      if [ -n "$http_proxy" ]; then
+        export GLOBAL_AGENT_HTTP_PROXY="${http_proxy}"
+        export GLOBAL_AGENT_HTTPS_PROXY="${http_proxy}"
+      fi
       snapcraftctl build
       sed -i 's/include-system-site-packages = false/include-system-site-packages = true/g' $SNAPCRAFT_PART_INSTALL/pyvenv.cfg
   hooks:
