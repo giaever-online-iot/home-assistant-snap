@@ -61,7 +61,7 @@ apps:
       - network
       - network-bind
       - raw-usb
-      #- serial-port
+      - serial-port
       # GPIO devices etc.. (e.g RaZberry HAT)
       - physical-memory-control
       - removable-media
