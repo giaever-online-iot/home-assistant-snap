@@ -60,6 +60,7 @@ apps:
       - bluez
       - network
       - network-bind
+      - network-observe
       - raw-usb
       - serial-port
       # GPIO devices etc.. (e.g RaZberry HAT)
