@@ -60,6 +60,7 @@ apps:
       - bluez
       - network
       - network-bind
+      - network-control
       - network-observe
       - raw-usb
       - serial-port
