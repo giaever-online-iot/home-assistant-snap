@@ -1,5 +1,5 @@
 name: home-assistant-snap
-version: '2021.5.5'
+version: '2021.6.0b'
 summary: Open source home automation that puts local control and privacy first
 description: |
   Home Assistant is a home automation platform running on Python 3. 
@@ -29,6 +29,8 @@ layout:
     bind-file: $SNAP_DATA/pip.conf
   /etc/openzwave:
     bind: $SNAP/openzwave
+  /etc/ethertypes:
+    bind-file: $SNAP/etc/ethertypes
 
 plugs:
   bin:
@@ -61,7 +63,6 @@ apps:
       - network
       - network-bind
       - network-control
-      - network-observe
       - raw-usb
       - serial-port
       # GPIO devices etc.. (e.g RaZberry HAT)
@@ -70,6 +71,12 @@ apps:
     slots: 
       - components
   check-config:
+    plugs: 
+      - network
+      - network-bind
+      - network-control
+    environment:
+      PIP_USER: 1
     command: bin/hass --script check_config --config $SNAP_DATA -i
 
 parts:
@@ -114,6 +121,8 @@ parts:
       - libxslt1-dev
       - zlib1g-dev
     stage-packages:
+      - python3-pcapy
+      - libpcap0.8
       - freeglut3
       - ffmpeg
       - libglu1-mesa
