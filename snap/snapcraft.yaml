@@ -49,6 +49,11 @@ slots:
     write:
       - $SNAP_DATA
 
+hooks:
+  post-refresh:
+    plugs:
+      - network
+
 apps:
   home-assistant-snap:
     command: bin/hass --config $SNAP_DATA
@@ -73,8 +78,6 @@ apps:
   check-config:
     plugs: 
       - network
-      - network-bind
-      - network-control
     environment:
       PIP_USER: 1
     command: bin/hass --script check_config --config $SNAP_DATA -i
@@ -123,7 +126,6 @@ parts:
     stage-packages:
       # - python3-pcapy
       # - libpcap0.8
-      #
       - iptables
       - freeglut3
       - ffmpeg

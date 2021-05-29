@@ -13,17 +13,6 @@ if [ -d "${CCT}" ]; then
         mv "${CCT}" "${CC}"
     fi
 fi
-#
-# if [ -d "${CC}" ]; then
-#     logger "Disabling custom components"
-#     mv "${CC}" "${CCT}"
-# fi
-#
-$SNAP/bin/hass --script check_config --config "${SNAP_DATA}"
-#
-# if [ -d "${CC}" ]; then
-#     logger "Enabling custom components"
-#     mv "${CCT}" "${CC}"
-# fi
-#
-# exit $RES
+logger "Skipping config test"
+#export PIP_USER=1
+#$SNAP/bin/hass --script check_config --config "${SNAP_DATA}"
