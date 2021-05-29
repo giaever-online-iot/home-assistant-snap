@@ -126,7 +126,7 @@ parts:
     stage-packages:
       # - python3-pcapy
       # - libpcap0.8
-      - iptables
+      # - iptables
       - freeglut3
       - ffmpeg
       - libglu1-mesa
