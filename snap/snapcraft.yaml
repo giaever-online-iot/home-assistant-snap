@@ -1,5 +1,5 @@
 name: home-assistant-snap
-version: '2021.6.0b1'
+version: '2021.6.0'
 summary: Open source home automation that puts local control and privacy first
 description: |
   Home Assistant is a home automation platform running on Python 3. 
@@ -49,10 +49,10 @@ slots:
     write:
       - $SNAP_DATA
 
-hooks:
-  post-refresh:
-    plugs:
-      - network
+# hooks:
+#   post-refresh:
+#     plugs:
+#       - network
 
 apps:
   home-assistant-snap:
@@ -126,7 +126,7 @@ parts:
     stage-packages:
       # - python3-pcapy
       # - libpcap0.8
-      # - iptables
+      - iptables
       - freeglut3
       - ffmpeg
       - libglu1-mesa
