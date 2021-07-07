@@ -130,6 +130,7 @@ parts:
       - freeglut3
       - ffmpeg
       - libglu1-mesa
+      - libpulse0
       - zlib1g
     requirements:
       - requirements_all.txt
