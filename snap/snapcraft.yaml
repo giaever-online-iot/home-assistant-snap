@@ -1,5 +1,5 @@
 name: home-assistant-snap
-version: '2021.7.0'
+version: '2021.7.1'
 summary: Open source home automation that puts local control and privacy first
 description: |
   Home Assistant is a home automation platform running on Python 3. 
@@ -84,7 +84,7 @@ apps:
 
 parts:
   homeassistant:
-    plugin: python #-wot-plugin
+    plugin: python-wot-plugin
     source: https://github.com/home-assistant/core.git
     source-tag: ${SNAPCRAFT_PROJECT_VERSION}
     python-packages:
@@ -117,6 +117,7 @@ parts:
       - libgpiod-dev
       - libjpeg-dev
       - libopenzwave1.5-dev
+      - libswresample-dev
       - libssl-dev
       - libswscale-dev
       - libudev-dev
@@ -130,7 +131,7 @@ parts:
       - freeglut3
       - ffmpeg
       - libglu1-mesa
-      - libpulse0
+        #- libpulse0
       - zlib1g
     requirements:
       - requirements_all.txt
