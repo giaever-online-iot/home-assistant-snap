@@ -92,9 +92,9 @@ parts:
       - wheel
       - Cython
       - pip
-    build-environment:
-      - on ppc64el:
-        - CHPL_TARGET_ARCH: none
+    # build-environment:
+    #   - on ppc64el:
+    #     - CHPL_TARGET_ARCH: none
     build-packages:
       - python3
       - python3-dev
@@ -139,6 +139,7 @@ parts:
     constraints:
       - homeassistant/package_constraints.txt
     override-build: |
+      python3 -m platform "print(platform.machine())"
       snapcraftctl build
       sed -i 's/include-system-site-packages = false/include-system-site-packages = true/g' $SNAPCRAFT_PART_INSTALL/pyvenv.cfg
   hooks:
