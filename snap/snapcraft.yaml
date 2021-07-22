@@ -94,7 +94,7 @@ parts:
       - pip
     build-environment:
       - on ppc64el:
-        CHPL_TARGET_ARCH: none
+        - CHPL_TARGET_ARCH: none
     build-packages:
       - python3
       - python3-dev
