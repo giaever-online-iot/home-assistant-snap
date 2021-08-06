@@ -1,0 +1,15 @@
+{
+  "domain": "updater",
+  "name": "updater",
+  "config_flow": false, 
+  "documentation": "https://www.home-assistant.io/integrations/updater",
+  "requirements": [],
+  "ssdp": [],
+  "zeroconf": [],
+  "dependencies": [],
+  "codeowners": [
+    "@home-assistant-snap"
+  ],
+  "iot_class": "cloud_polling",
+  "version": "1.0.0"
+}
