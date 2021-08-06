@@ -22,7 +22,7 @@ architectures:
   - build-on: amd64
   - build-on: arm64
   - build-on: armhf
-  - build-on: ppc64el
+  #- build-on: ppc64el
 
 layout:
   /etc/pip.conf:
@@ -49,11 +49,6 @@ slots:
     write:
       - $SNAP_DATA
 
-# hooks:
-#   post-refresh:
-#     plugs:
-#       - network
-
 apps:
   home-assistant-snap:
     command: bin/hass --config $SNAP_DATA
@@ -70,7 +65,6 @@ apps:
       - network-control
       - raw-usb
       - serial-port
-      # GPIO devices etc.. (e.g RaZberry HAT)
       - physical-memory-control
       - removable-media
     slots: 
@@ -125,9 +119,7 @@ parts:
     stage-packages:
       - freeglut3
       - ffmpeg
-      - iputils-ping
       - libglu1-mesa
-      #- libpcap0.8-dev
       - tcpdump
       - zlib1g
     stage:
