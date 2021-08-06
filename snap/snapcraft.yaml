@@ -121,6 +121,7 @@ parts:
       - ffmpeg
       - libglu1-mesa
       - tcpdump
+      - libpcap0.8-dev
       - zlib1g
     stage:
       - -lib/python3.8/site-packages/homeassistant/components/updater
