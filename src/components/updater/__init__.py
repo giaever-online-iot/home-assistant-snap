@@ -77,7 +77,11 @@ class Channel:
     def get_version(self) -> AwesomeVersion:
         return self.__version
 
-    def __gt__(self, other: Channel) -> int:
+    def __gt__(self, other: Channel) -> bool:
+        if self.__track == 'latest':
+            return False
+        elif other.get_track() == 'latest':
+            return False
         return self.__revision > other.get_revision() and self.__risk >= other.get_risk(False)
 
 class Track:
@@ -245,7 +249,8 @@ async def async_setup(hass, config):
 
         if snap_rev is None:
             if AwesomeVersion(current_version).dev:
-                snap_rev = 295
+                snap_rev = 327
+                _LOGGER.warning(f"Development, using SNAP_REVISION: {snap_rev}")
             else:
                 raise update_coordinator.UpdateFailed(Exception("Missing SNAP_REVISION environment variable."))
 
@@ -253,12 +258,34 @@ async def async_setup(hass, config):
             c_v = AwesomeVersion(current_version)
             track = tracks.get_track(f"{c_v.section(0)}.{c_v.section(1)}")
             if track is not None and len(track.get_channels()) != 0:
-                snap_rev = track.get_latest().get_revision()
+                xsnap_rev = track.get_latest().get_revision()
             else:
-                snap_rev = default_track.get_latest().get_revision()
+                xsnap_rev = default_track.get_latest().get_revision()
+            _LOGGER.warning(f"Locally built ({snap_rev}), using SNAP_REVISION: {xsnap_rev}")
+            snap_rev = xsnap_rev
 
         snap_rev = int(snap_rev)
         current_channel = tracks.find_for_revision(snap_rev)
+
+        """
+        NOTE: This is just predictions - as a revision of a snap might be in several channels,
+        and always in latest. Therefore you can be on latest and reciving notification on new
+        releases in another channel, if they have the same revision available
+        """
+
+        if current_channel.get_track() == "latest":
+            _LOGGER.warning(
+                f"You're on the channel «{current_channel}», please consider switch to «{default_track.get_latest()}». "
+                f"Switch with: sudo snap switch --channel={default_track.get_latest()}"
+                f"Staying on {current_channel} will auto-upgrade your Home Assistant instance, which "
+                f"can cause your Home Assistant instance to stop working as of breaking changes."
+            )
+            return Updater(False, default_track.get_latest(), current_channel, None,
+                f"You're on the channel «{current_channel}», please consider switch to «{default_track.get_latest()}». "
+                f"Switch with: sudo snap switch --channel={default_track.get_latest()}"
+                f"Staying on {current_channel} will auto-upgrade your Home Assistant instance, which "
+                f"can cause your Home Assistant instance to stop working as of breaking changes."
+            )
 
         if current_channel is not None:
             newer_channel = current_channel.get_track().channel_with_higher_revision(current_channel)
