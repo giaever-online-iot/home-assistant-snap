@@ -346,7 +346,7 @@ async def async_setup(hass, config):
         _LOGGER,
         name="Home Assistant Snap update",
         update_method=check_new_version,
-        update_interval=timedelta(seconds=45)
+        update_interval=timedelta(days=1)
     )
 
     asyncio.create_task(coordinator.async_refresh())

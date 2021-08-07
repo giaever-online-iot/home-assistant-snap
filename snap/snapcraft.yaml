@@ -69,6 +69,10 @@ apps:
       - removable-media
     slots: 
       - components
+  open-localhost:
+    command: bin/open-localhost
+    plugs:
+      - desktop
   check-config:
     plugs: 
       - network
@@ -109,6 +113,7 @@ parts:
       - libgpiod-dev
       - libjpeg-dev
       - libopenzwave1.5-dev
+      - libpcap0.8-dev
       - libswresample-dev
       - libssl-dev
       - libswscale-dev
@@ -139,6 +144,12 @@ parts:
     source-type: local
     organize:
       '*': lib/python3.8/site-packages/homeassistant/components/
+  bins:
+    plugin: dump
+    source: ./src/bin
+    source-type: local
+    organize:
+      open-localhost: bin/open-localhost
   hooks:
     plugin: dump
     source: ./src/hooks
