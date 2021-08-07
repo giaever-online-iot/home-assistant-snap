@@ -1,0 +1,9 @@
+[Desktop Entry]
+Version=1.0
+Comment=Launch Home Assistant in default browser
+Exec=home-assistant-snap.open-localhost
+Generic=Home Assistant
+Icon=${SNAP}/meta/gui/home-assistant-snap.png
+Name=Home Assistant Snap
+Terminal=false
+Type=Application
