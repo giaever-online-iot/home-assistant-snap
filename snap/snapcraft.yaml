@@ -22,11 +22,11 @@ architectures:
   - build-on: amd64
   - build-on: arm64
   - build-on: armhf
-  #- build-on: ppc64el
+  - build-on: ppc64el
 
 layout:
   /etc/pip.conf:
-    bind-file: $SNAP_DATA/pip.conf
+    bind-file: $SNAP_COMMON/pip.conf
   /etc/openzwave:
     bind: $SNAP/openzwave
   # /etc/ethertypes:
