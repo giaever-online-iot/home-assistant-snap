@@ -29,8 +29,12 @@ layout:
     bind-file: $SNAP_COMMON/pip.conf
   /etc/openzwave:
     bind: $SNAP/openzwave
-  # /etc/ethertypes:
-  #   bind-file: $SNAP/etc/ethertypes
+  /etc/ethertypes:
+    bind-file: $SNAP/etc/ethertypes
+  /etc/protocols:
+    bind-file: $SNAP/etc/protocols
+  /etc/services:
+    bind-file: $SNAP/etc/services
 
 plugs:
   bin:
@@ -125,6 +129,7 @@ parts:
       - freeglut3
       - ffmpeg
       - libglu1-mesa
+      - netbase
       - tcpdump
       - libpcap0.8
       - zlib1g
