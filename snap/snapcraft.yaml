@@ -1,30 +1,90 @@
 name: home-assistant-snap
+title: Home assistant
 version: '2021.8.8'
+icon: snap/gui/home-assistant-snap.svg
 summary: Open source home automation that puts local control and privacy first
 description: |
-  Home Assistant is a home automation platform running on Python 3. 
-  It is able to track and control all devices at home and offer a 
-  platform for automating control. 
+  Home Assistant is a free and open-source software for home automation that is designed to be the central control system for smart home devices with focus on local control and privacy. 
 
-  Your new installation will be available through your browser at http://localhost:8123/
+  It can be accessed via a web-based user interface, via companion apps for Android and iOS, or using voice commands via a supported virtual assistant like Google Assistant or Amazon Alexa.
+  Home Assistant integrates with over a thousand different devices and services.
 
-  Please see official docs: https://git.giaever.org/joachimmg/home-assistant-snap and https://community.home-assistant.io for help on configuration etc.
+  Read more about Home Assistant at
+  - https://en.wikipedia.org/wiki/Home_Assistant
+  - https://www.home-assistant.io/
 
-  See `snap connections home-assistant-snap` for necessary plugs (such as access to USB etc).
+  **NOTE!** This is Home Assistant Core (not supervised). 
 
-  NOTE! Snap will automatically update whenever a new revision of the snap package is available. 
+  Your new installation will be available through your browser at http://localhost:8123/ (or change localhost to any other IP address where the snap packages is installed). You will get a launcher available in your application menu on desktops.
+
+  **Important information about updates**
+
+  Since each major versions of Home Assistant might bring breaking changes, you will **only** auto-update for minor releases. Each major release must be upgraded manually, by switching channel. 
+
+  See available channels in the software center or with 
+  `snap info home-assistant-snap`
+  Please use the stable versions, e.g `2021.8/stable`. 
+
+  You can switch channel with:
+
+  `
+  $ snap switch home-assistant-snap --channel=<channel>
+  `
+
+  where `<channel>` could be `2021.8/stable`.
+
+  There is a binary sensor `binary_sensor.updater` that will flip to `true` from `false` whenever there are updates available in a newer channel. Use this to show a notification whenever a new major release is available.
+
+  **Need help?** 
+
+  Please use https://www.home-assistant.io/docs/ for documentation and https://community.home-assistant.io for  help from the community.
+
+  **Necessary plugs**
+
+  Can't connect to your USB (e.g Zigbee, Z-wave, removable drive)?
+
+  See `snap connections home-assistant-snap` for necessary plugs (such as access to USB, removable media etc) and connect them with 
+
+  `$ snap connect home-assistant-snap:<plug>`
+
+  where `<plug>` can be in example `raw-usb`.
+
+  **Required plugs**
+
+  - *network:* allows Home Assistant access to the network.
+  - *network-bind:* allows operating as a network service, to run the Home Assistant server.
+  - *network-control:* enables the configuration of networking and network namespaces via `ip netns`, providing a wide, privileged access to networking. This is required for the DHCP discovery integration to work which will watch the network for DHCP requests for supported devices and services. To disable this feature you will have to disable the `default_config` from you `configuration.yaml` and disconnect the `network-control` plug with `snap disconnect home-assistant-snap:network-control`.
+
+  **NOTE!** Removing the `default_config` will require you to build up a whole new configuration for Home Assistant. More on what is enabled by default at this link: https://www.home-assistant.io/integrations/default_config/
+
+  **Optional plugs**
+  - *raw-usb:* allows access to all connected USB devices via a raw interface.
+  - *removable-media*: allows read/write access to mounted removable storage in /media, /run/media and /mnt.
+  - *serial-port*: enables access to a specific serial port. This interface is restricted because it provides privileged access to configure serial port hardware. Might require hot-plug support `snap set system experimental.hotplug=true` followed by `systemctl restart snapd`.
+
+  **Available slots**
+  - *components:* Load custom components to Home Assistant. You will find the Home Assistant Community Store package here: https://snapcraft.io/home-assistant-hacs - Installations on own risk and note that provided integrations are not tested or guaranteed to work.
+  - *bin:* Missing binaries might be in the Home Assistant Toolbox, such as cURL etc. See https://snapcraft.io/home-assistant-toolbox
+  - *configurator:* Edit your configuration files with HASS configurator. There is a ready package called Home Assistant Configurator here: https://snapcraft.io/home-assistant-configurator.
+source-code: "https://github.com/home-assistant-snap/home-assistant-snap"
+website: "https://github.com/home-assistant-snap/home-assistant-snap"
+issues: "https://github.com/home-assistant-snap/home-assistant-snap/issues"
+donation: "https://www.paypal.com/donate/?hosted_button_id=69NA8SXXFBDBN"
+license: Apache-2.0
+
 base: core20
 grade: stable
 confinement: strict
-license: Apache-2.0
 
 architectures:
   - build-on: amd64
   - build-on: arm64
   - build-on: armhf
-  - build-on: ppc64el
+  # - build-on: ppc64el
 
 layout:
+  /usr/local/lib:
+    bind: $SNAP/usr/lib/${SNAPCRAFT_ARCH_TRIPLET}
   /etc/pip.conf:
     bind-file: $SNAP_COMMON/pip.conf
   /etc/openzwave:
@@ -132,6 +192,7 @@ parts:
       - netbase
       - tcpdump
       - libpcap0.8
+      - libpcap0.8-dev
       - zlib1g
     stage:
       - -lib/python3.8/site-packages/homeassistant/components/updater
@@ -142,6 +203,12 @@ parts:
     override-build: |
       snapcraftctl build
       sed -i 's/include-system-site-packages = false/include-system-site-packages = true/g' $SNAPCRAFT_PART_INSTALL/pyvenv.cfg
+    # override-stage: |
+    #   snapcraftctl stage
+    #   ls -al ${SNAPCRAFT_STAGE}/
+    #   echo "WE're here now"
+    #   touch ${SNAPCRAFT_STAGE}/etc/ld.so.conf.d/ha-${SNAPCRAFT_ARCH_TRIPLET}.conf
+    #   # echo "/usr/lib/home-assistant" > prime/etc/ld.so.conf.d/libc.conf
   updater:
     after: [homeassistant]
     plugin: dump
