@@ -370,7 +370,7 @@ async def get_versions(hass):
         else:
             raise update_coordinator.UpdateFailed(Exception("Missing SNAP_ARCH environment variable."))
 
-    with async_timeout.timeout(30):
+    with async_timeout.timeout(45):
         req = await session.get(UPDATER_URL % snap_arch, headers={
             'Snap-Device-Series': '16'
         })
