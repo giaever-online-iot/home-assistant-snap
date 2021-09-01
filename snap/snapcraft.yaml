@@ -66,10 +66,10 @@ description: |
   - *components:* Load custom components to Home Assistant. You will find the Home Assistant Community Store package here: https://snapcraft.io/home-assistant-hacs - Installations on own risk and note that provided integrations are not tested or guaranteed to work.
   - *bin:* Missing binaries might be in the Home Assistant Toolbox, such as cURL etc. See https://snapcraft.io/home-assistant-toolbox
   - *configurator:* Edit your configuration files with HASS configurator. There is a ready package called Home Assistant Configurator here: https://snapcraft.io/home-assistant-configurator.
-source-code: "https://github.com/home-assistant-snap/home-assistant-snap"
-website: "https://github.com/home-assistant-snap/home-assistant-snap"
-issues: "https://github.com/home-assistant-snap/home-assistant-snap/issues"
-donation: "https://www.paypal.com/donate/?hosted_button_id=69NA8SXXFBDBN"
+# source-code: "https://github.com/home-assistant-snap/home-assistant-snap"
+# website: "https://github.com/home-assistant-snap/home-assistant-snap"
+# issues: "https://github.com/home-assistant-snap/home-assistant-snap/issues"
+# donation: "https://www.paypal.com/donate/?hosted_button_id=69NA8SXXFBDBN"
 license: Apache-2.0
 
 base: core20
