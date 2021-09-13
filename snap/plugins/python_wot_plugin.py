@@ -17,7 +17,8 @@ for python >= 3.7, see:
 class PluginImpl(plugins.python.PythonPlugin):
     def get_build_commands(self) -> List[str]:
         cmds = super().get_build_commands()
-        cmds.insert(1, 'python3 -m pip install --upgrade pip');
+        #  cmds.insert(1, 'python3 -m pip install --upgrade pip');
+        #  cmds.insert(2, 'python3 -m pip install -U "setuptools<58"')
         #cmds.insert(1, 'pip install --trusted-host pypi.python.org --trusted-host files.pythonhosted.org --trusted-host pypi.org --upgrade pip')
         for idx, cmd in enumerate(cmds):
             # Find position where to inject pip uninstall
