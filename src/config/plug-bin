@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+# just to prevent error on shelling
+cd $SNAP
+
 snapctl is-connected bin
 
 if [ $? -eq 0 ]; then
