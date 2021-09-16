@@ -197,6 +197,7 @@ parts:
       - zlib1g
     stage:
       - -lib/python3.8/site-packages/homeassistant/components/updater
+      - -lib/python3.8/site-packages/aiogithubapi*
     requirements:
       - requirements_all.txt
     constraints:
