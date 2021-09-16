@@ -7,7 +7,7 @@ if [ $? -eq 0 ]; then
 
     if [ "${#PATHS[@]}" -ne 0 ]; then
         for TPATH in "${PATHS[@]}"; do
-            PATH="${PATH}:${TPATH}"
+            export PATH="${PATH}:${TPATH}"
         done
     fi
 fi
@@ -17,7 +17,7 @@ readarray -d '' PATHS < <(find "$SNAP/usr/lib/$(uname -m)-linux-gnu" -maxdepth 1
 
 if [ "${#PATHS[@]}" -ne 0 ]; then
     for TPATH in "${PATHS[@]}"; do
-        PATH="${PATH}:${TPATH}"
+        export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${TPATH}"
     done
 fi
 
