@@ -189,10 +189,11 @@ parts:
       - freeglut3
       - ffmpeg
       - libglu1-mesa
-      - netbase
-      - tcpdump
       - libpcap0.8
       - libpcap0.8-dev
+      - libpulse0
+      - netbase
+      - tcpdump
       - zlib1g
     stage:
       - -lib/python3.8/site-packages/homeassistant/components/updater
@@ -201,16 +202,8 @@ parts:
     constraints:
       - homeassistant/package_constraints.txt
     override-build: |
-      #python3 -m pip install -U setuptools
-      #/root/parts/homeassistant/install/bin/python3 -m pip install --upgrade pip
       snapcraftctl build
       sed -i 's/include-system-site-packages = false/include-system-site-packages = true/g' $SNAPCRAFT_PART_INSTALL/pyvenv.cfg
-    # override-stage: |
-    #   snapcraftctl stage
-    #   ls -al ${SNAPCRAFT_STAGE}/
-    #   echo "WE're here now"
-    #   touch ${SNAPCRAFT_STAGE}/etc/ld.so.conf.d/ha-${SNAPCRAFT_ARCH_TRIPLET}.conf
-    #   # echo "/usr/lib/home-assistant" > prime/etc/ld.so.conf.d/libc.conf
   updater:
     after: [homeassistant]
     plugin: dump
