@@ -153,8 +153,8 @@ parts:
       - setuptools<58
       - wheel
       - Cython
-    build-environment:
-      - SNAPCRAFT_PYTHON_VENV_ARGS: --upgrade
+    # build-environment:
+    #   - SNAPCRAFT_PYTHON_VENV_ARGS: --upgrade
     build-packages:
       - python3
       - python3-dev
