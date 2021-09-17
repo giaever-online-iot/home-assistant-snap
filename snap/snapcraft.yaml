@@ -65,7 +65,9 @@ description: |
   **Available slots**
   - *components:* Load custom components to Home Assistant. You will find the Home Assistant Community Store package here: https://snapcraft.io/home-assistant-hacs - Installations on own risk and note that provided integrations are not tested or guaranteed to work.
   - *bin:* Missing binaries might be in the Home Assistant Toolbox, such as cURL etc. See https://snapcraft.io/home-assistant-toolbox
-  - *configurator:* Edit your configuration files with HASS configurator. There is a ready package called Home Assistant Configurator here: https://snapcraft.io/home-assistant-configurator.
+  - *configurations:* Edit your configuration files with `code-server` (VS Code) or HASS configurator. There are packages called `code-server` or Home Assistant Configurator here: 
+    - https://snapcraft.io/code-server
+    - https://snapcraft.io/home-assistant-configurator.
 # source-code: "https://github.com/home-assistant-snap/home-assistant-snap"
 # website: "https://github.com/home-assistant-snap/home-assistant-snap"
 # issues: "https://github.com/home-assistant-snap/home-assistant-snap/issues"
@@ -80,7 +82,7 @@ architectures:
   - build-on: amd64
   - build-on: arm64
   - build-on: armhf
-  - build-on: ppc64el
+    #- build-on: ppc64el
 
 layout:
   /usr/local/lib:
@@ -109,6 +111,10 @@ slots:
     write: 
       - $SNAP_DATA/custom_components
   configurations:
+    interface: content
+    write:
+      - $SNAP_DATA
+  vscs-content:
     interface: content
     write:
       - $SNAP_DATA
