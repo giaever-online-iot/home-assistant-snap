@@ -188,6 +188,8 @@ parts:
       - libxml2-dev
       - libxslt1-dev
       - zlib1g-dev
+      - on armhf:
+        - rustc
     stage-packages:
       - freeglut3
       - ffmpeg
