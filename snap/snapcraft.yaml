@@ -1,6 +1,6 @@
 name: home-assistant-snap
 title: Home assistant
-version: '2021.10.5'
+version: '2021.10.6'
 icon: snap/gui/home-assistant-snap.svg
 summary: Open source home automation that puts local control and privacy first
 description: |
@@ -79,10 +79,10 @@ grade: stable
 confinement: strict
 
 architectures:
-  # - build-on: amd64
-  # - build-on: arm64
+  - build-on: amd64
+  - build-on: arm64
   - build-on: armhf
-    #- build-on: ppc64el
+  - build-on: ppc64el
 
 layout:
   /usr/local/lib:
