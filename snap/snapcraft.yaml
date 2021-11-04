@@ -79,8 +79,8 @@ grade: stable
 confinement: strict
 
 architectures:
-  - build-on: amd64
-  - build-on: arm64
+  # - build-on: amd64
+  # - build-on: arm64
   - build-on: armhf
   - build-on: ppc64el
 
@@ -160,9 +160,6 @@ parts:
       - wheel
       - Cython
     build-packages:
-      - python3
-      - python3-dev
-      - pkg-config
       - autoconf
       - build-essential
       - cmake
@@ -187,10 +184,16 @@ parts:
       - libudev-dev
       - libxml2-dev
       - libxslt1-dev
+      - pkg-config
+      - python3
+      - python3-dev
       - zlib1g-dev
       - on armhf:
         - rustc
         - cargo
+        - make
+        - gcc
+        - dpkg-dev
       - on ppc64el:
         - rustc
         - cargo
