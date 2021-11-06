@@ -156,26 +156,11 @@ package-repositories:
    ppa: deadsnakes/ppa
 
 parts:
-  # python:
-  #   plugin: dump
-  #   source: ./src/nil
-  #   build-packages:
-  #     - python3.9-dev
-  #   stage-packages:
-  #     - python3.9-venv
-  #     - python3.9-distutils
-  #   override-build: |
-  #     snapcraftctl build
-  #     cp -rf $(find /snap -path *python3.9/distutils -print0 -quit) ${SNAPCRAFT_PART_INSTALL}/usr/lib/python3.9
-
   homeassistant:
     # after: [python]
     plugin: python #-wot-plugin
     source: https://github.com/home-assistant/core.git
     source-tag: ${SNAPCRAFT_PROJECT_VERSION}
-    # build-environment:
-    #   - SNAPCRAFT_PYTHON_INTERPRETER: python3.9
-    #   - SNAPCRAFT_PYTHON_VENV_ARGS: --system-site-packages
     python-packages:
       - setuptools<58
       - wheel
@@ -237,20 +222,6 @@ parts:
     constraints:
       - homeassistant/package_constraints.txt
     override-build: |
-      # export PYTHONPATH="/root/parts/python/install/usr/lib/python3.9"
-      # python3.9 -c 'help("modules")'
-      # /root/parts/python/install/usr/bin/python3.9 -c 'help("modules")'
-      # mkdir -p "${SNAPCRAFT_PART_INSTALL}/bin"
-      # ln -sf /root/parts/python/install/usr/bin/python3.9 /root/parts/homeassistant/install/bin/python3.9
-      # /root/parts/homeassistant/install/bin/python3.9 -c 'help("modules")'
-      # rm -rf /var/tmp/*
-      # /root/parts/homeassistant/install/bin/python3.9 -Im ensurepip
-      # IDISTUTILS="$(find ${SNAPCRAFT_PART_INSTALL} -path *python3.9/distutils -print0 -quit)"
-      # UDISTUTILS="$(find /usr -path *python3.9/distutils -print0 -quit)"
-      # rm -rf "${IDISTUTILS}"
-      # cp -r "${UDISTUTILS}" "${IDISTUTILS}"
-      # mkdir -p "${SNAPCRAFT_PART_INSTALL}/usr/include"
-      # cp -r "$(find /usr -path *include/python3.9 -print0 -quit)" "${SNAPCRAFT_PART_INSTALL}/usr/include"
       snapcraftctl build
       sed -i 's/include-system-site-packages = false/include-system-site-packages = true/g' $SNAPCRAFT_PART_INSTALL/pyvenv.cfg
   updater:
@@ -259,7 +230,7 @@ parts:
     source: ./src/components
     source-type: local
     organize:
-      '*': lib/python3.9/site-packages/homeassistant/components/
+      '*': lib/python3.8/site-packages/homeassistant/components/
   bins:
     plugin: dump
     source: ./src/bin
