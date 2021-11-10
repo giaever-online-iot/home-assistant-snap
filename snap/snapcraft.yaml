@@ -151,35 +151,30 @@ apps:
       PIP_USER: 1
     command: bin/hass --script check_config --config $SNAP_DATA -i
 
-package-repositories:
- - type: apt
-   ppa: deadsnakes/ppa
+# package-repositories:
+#  - type: apt
+#    ppa: deadsnakes/ppa
 
 parts:
-  # python:
-  #   plugin: dump
-  #   source: ./src/nil
-  #   build-packages:
-  #     - python3.9-dev
-  #   stage-packages:
-  #     - python3.9-venv
-  #     - python3.9-distutils
-  #   override-build: |
-  #     snapcraftctl build
-  #     cp -rf $(find /snap -path *python3.9/distutils -print0 -quit) ${SNAPCRAFT_PART_INSTALL}/usr/lib/python3.9
+  python:
+    plugin: dump 
+    source: ./src/nil
+    stage-packages:
+      - python3.9-venv
 
   homeassistant:
-    # after: [python]
+    after: [python]
     plugin: python #-wot-plugin
     source: https://github.com/home-assistant/core.git
     source-tag: ${SNAPCRAFT_PROJECT_VERSION}
-    # build-environment:
-    #   - SNAPCRAFT_PYTHON_INTERPRETER: python3.9
-    #   - SNAPCRAFT_PYTHON_VENV_ARGS: --system-site-packages
+    build-environment:
+      - SNAPCRAFT_PYTHON_INTERPRETER: python3.9
+      # - SNAPCRAFT_PYTHON_VENV_ARGS: --without-pip
     python-packages:
       - setuptools<58
       - wheel
       - Cython
+      - pip
     build-packages:
       - autoconf
       - build-essential
@@ -207,7 +202,9 @@ parts:
       - libxml2-dev
       - libxslt1-dev
       - pkg-config
-      - python3-dev
+      - python3-pip
+      - python3.9-dev
+      # - python3.9-venv
       - zlib1g-dev
       - on armhf:
         - rustc
@@ -229,30 +226,22 @@ parts:
       - netbase
       - tcpdump
       - zlib1g
+      # - python3.9-venv
     stage:
-      - -lib/python3.8/site-packages/homeassistant/components/updater
-      - -lib/python3.8/site-packages/aiogithubapi*
+      - -lib/python3.9/site-packages/homeassistant/components/updater
+      - -lib/python3.9/site-packages/aiogithubapi*
     requirements:
       - requirements_all.txt
     constraints:
       - homeassistant/package_constraints.txt
-    override-build: |
-      # export PYTHONPATH="/root/parts/python/install/usr/lib/python3.9"
-      # python3.9 -c 'help("modules")'
-      # /root/parts/python/install/usr/bin/python3.9 -c 'help("modules")'
-      # mkdir -p "${SNAPCRAFT_PART_INSTALL}/bin"
-      # ln -sf /root/parts/python/install/usr/bin/python3.9 /root/parts/homeassistant/install/bin/python3.9
-      # /root/parts/homeassistant/install/bin/python3.9 -c 'help("modules")'
-      # rm -rf /var/tmp/*
-      # /root/parts/homeassistant/install/bin/python3.9 -Im ensurepip
-      # IDISTUTILS="$(find ${SNAPCRAFT_PART_INSTALL} -path *python3.9/distutils -print0 -quit)"
-      # UDISTUTILS="$(find /usr -path *python3.9/distutils -print0 -quit)"
-      # rm -rf "${IDISTUTILS}"
-      # cp -r "${UDISTUTILS}" "${IDISTUTILS}"
-      # mkdir -p "${SNAPCRAFT_PART_INSTALL}/usr/include"
-      # cp -r "$(find /usr -path *include/python3.9 -print0 -quit)" "${SNAPCRAFT_PART_INSTALL}/usr/include"
-      snapcraftctl build
-      sed -i 's/include-system-site-packages = false/include-system-site-packages = true/g' $SNAPCRAFT_PART_INSTALL/pyvenv.cfg
+    # override-build: |
+    #   rm -rf $SNAPCRAFT_PART_INSTALL/usr/lib/python3.9/distutils
+    #   mkdir -p $SNAPCRAFT_PART_INSTALL/usr/lib/python3.9
+    #   cp -rf /usr/lib/python3.9/distutils $SNAPCRAFT_PART_INSTALL/usr/lib/python3.9/distutils
+    #   mkdir -p $SNAPCRAFT_PART_INSTALL/usr/include/
+    #   cp -rf /usr/include/python3.9 $SNAPCRAFT_PART_INSTALL/usr/include/python3.9
+    #   snapcraftctl build
+    #   sed -i 's/include-system-site-packages = false/include-system-site-packages = true/g' $SNAPCRAFT_PART_INSTALL/pyvenv.cfg
   updater:
     after: [homeassistant]
     plugin: dump
