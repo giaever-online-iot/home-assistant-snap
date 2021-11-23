@@ -244,13 +244,13 @@ parts:
       - python3-pip
       - python3.9-dev
       - zlib1g-dev
-      - on armhf:
-        - cargo
-        - dpkg-dev
-        - gcc
-        - libfreetype-dev
-        - make
-        - rustc
+      # - on armhf:
+      #   - cargo
+      #   - dpkg-dev
+      #   - gcc
+      #   - libfreetype-dev
+      #   - make
+      #   - rustc
       - on ppc64el:
         - cargo
         - rustc
