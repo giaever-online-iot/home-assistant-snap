@@ -79,10 +79,10 @@ grade: stable
 confinement: strict
 
 architectures:
-  - build-on: amd64
-  - build-on: arm64
+  # - build-on: amd64
+  # - build-on: arm64
   - build-on: armhf
-  - build-on: ppc64el
+  # - build-on: ppc64el
 
 layout:
   /usr/local/lib:
@@ -244,13 +244,13 @@ parts:
       - python3-pip
       - python3.9-dev
       - zlib1g-dev
-      # - on armhf:
-      #   - cargo
+      - on armhf:
+        - cargo
       #   - dpkg-dev
       #   - gcc
       #   - libfreetype-dev
       #   - make
-      #   - rustc
+        - rustc
       - on ppc64el:
         - cargo
         - rustc
