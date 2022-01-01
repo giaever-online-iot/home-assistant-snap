@@ -1,6 +1,6 @@
 name: home-assistant-snap
 title: Home assistant
-version: '2021.12.6'
+version: '2021.12.7'
 icon: snap/gui/home-assistant-snap.svg
 summary: Open source home automation that puts local control and privacy first
 description: |
@@ -61,6 +61,7 @@ description: |
   - *raw-usb:* allows access to all connected USB devices via a raw interface.
   - *removable-media*: allows read/write access to mounted removable storage in /media, /run/media and /mnt.
   - *serial-port*: enables access to a specific serial port. This interface is restricted because it provides privileged access to configure serial port hardware. Might require hot-plug support `snap set system experimental.hotplug=true` followed by `systemctl restart snapd`.
+  - *hardware-observe*: required to use the `usb` discovery component
 
   **Available slots**
   - *components:* Load custom components to Home Assistant. You will find the Home Assistant Community Store package here: https://snapcraft.io/home-assistant-hacs - Installations on own risk and note that provided integrations are not tested or guaranteed to work.
