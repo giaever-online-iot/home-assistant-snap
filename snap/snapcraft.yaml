@@ -13,41 +13,38 @@ description: |
   - https://en.wikipedia.org/wiki/Home_Assistant
   - https://www.home-assistant.io/
 
-  **NOTE!** This is Home Assistant Core (not supervised). 
+  **NOTE!** This is Home Assistant Core (not Supervised). 
 
-  Your new installation will be available through your browser at http://localhost:8123/ (or change localhost to any other IP address where the snap packages is installed). You will get a launcher available in your application menu on desktops.
+  Your new installation will be available through your browser at http://localhost:8123/ (or any other IP address where this packages is installed). You will get a launcher available in your application menu on desktops.
 
   **Important information about updates**
 
-  Since each major versions of Home Assistant might bring breaking changes, you will **only** auto-update for minor releases. Each major release must be upgraded manually, by switching channel. 
+  Each major versions of Home Assistant might bring breaking changes so you will **only** auto-update for minor releases. Each major release must be upgraded manually by switching channel. 
 
   See available channels in the software center or with 
   `snap info home-assistant-snap`
   Please use the stable versions, e.g `2021.8/stable`. 
 
   You can switch channel with:
-
-  `
+  ```
   $ snap switch home-assistant-snap --channel=<channel>
-  `
+  ```
 
   where `<channel>` could be `2021.8/stable`.
 
-  There is a binary sensor `binary_sensor.updater` that will flip to `true` from `false` whenever there are updates available in a newer channel. Use this to show a notification whenever a new major release is available.
+  There is a binary sensor `binary_sensor.updater` that will flip to `true` whenever there are updates available in a newer channel. Use this to show a notification whenever a new major release is available.
 
   **Need help?** 
 
-  Please use https://www.home-assistant.io/docs/ for documentation and https://community.home-assistant.io for  help from the community.
+  Please use https://www.home-assistant.io/docs/ for documentation and https://community.home-assistant.io for help.
 
   **Necessary plugs**
-
-  Can't connect to your USB (e.g Zigbee, Z-wave, removable drive)?
 
   See `snap connections home-assistant-snap` for necessary plugs (such as access to USB, removable media etc) and connect them with 
 
   `$ snap connect home-assistant-snap:<plug>`
 
-  where `<plug>` can be in example `raw-usb`.
+  where `<plug>` can be in example `raw-usb` (needed for Zigbee, Z-wave and other USB dongles).
 
   **Required plugs**
 
@@ -61,7 +58,7 @@ description: |
   - *raw-usb:* allows access to all connected USB devices via a raw interface.
   - *removable-media*: allows read/write access to mounted removable storage in /media, /run/media and /mnt.
   - *serial-port*: enables access to a specific serial port. This interface is restricted because it provides privileged access to configure serial port hardware. Might require hot-plug support `snap set system experimental.hotplug=true` followed by `systemctl restart snapd`.
-  - *hardware-observe*: required to use the `usb` discovery component
+  - *hardware-observe*: required to use the `usb` discovery component.
 
   **Available slots**
   - *components:* Load custom components to Home Assistant. You will find the Home Assistant Community Store package here: https://snapcraft.io/home-assistant-hacs - Installations on own risk and note that provided integrations are not tested or guaranteed to work.
