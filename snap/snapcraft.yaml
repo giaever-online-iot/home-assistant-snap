@@ -1,6 +1,6 @@
 name: home-assistant-snap
 title: Home assistant
-version: '2021.12.7'
+version: '2021.12.9'
 icon: snap/gui/home-assistant-snap.svg
 summary: Open source home automation that puts local control and privacy first
 description: |
@@ -48,8 +48,6 @@ description: |
 
   **Required plugs**
 
-  - *network:* allows Home Assistant access to the network.
-  - *network-bind:* allows operating as a network service, to run the Home Assistant server.
   - *network-control:* enables the configuration of networking and network namespaces via `ip netns`, providing a wide, privileged access to networking. This is required for the DHCP discovery integration to work which will watch the network for DHCP requests for supported devices and services. To disable this feature you will have to disable the `default_config` from you `configuration.yaml` and disconnect the `network-control` plug with `snap disconnect home-assistant-snap:network-control`.
 
   **NOTE!** Removing the `default_config` will require you to build up a whole new configuration for Home Assistant. More on what is enabled by default at this link: https://www.home-assistant.io/integrations/default_config/
