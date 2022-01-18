@@ -241,6 +241,9 @@ parts:
       - python3-pip
       - python3.9-dev
       - zlib1g-dev
+      - on arm64:
+        - cargo
+        - rustc
       - on armhf:
         - cargo
       #   - dpkg-dev
