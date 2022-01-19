@@ -246,10 +246,7 @@ parts:
         - rustc
       - on armhf:
         - cargo
-      #   - dpkg-dev
-      #   - gcc
-      #   - libfreetype-dev
-      #   - make
+        - gfortran
         - rustc
       - on ppc64el:
         - cargo
