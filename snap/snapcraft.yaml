@@ -106,6 +106,8 @@ slots:
     content: components
     write: 
       - $SNAP_DATA/custom_components
+    # read:
+    #   - $SNAP_DATA/home-assistant.log
   configurations:
     interface: content
     write:
@@ -198,6 +200,8 @@ parts:
       - libxft2
       - libxrender1
       - libxss1
+      - bluetooth
+      - libbluetooth-dev
 
   homeassistant:
     after: [python]
