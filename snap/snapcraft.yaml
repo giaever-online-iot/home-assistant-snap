@@ -1,6 +1,6 @@
 name: home-assistant-snap
 title: Home assistant
-version: '2022.3.6'
+version: '2022.3.7'
 icon: snap/gui/home-assistant-snap.svg
 summary: Open source home automation that puts local control and privacy first
 description: |
@@ -211,10 +211,10 @@ parts:
     build-environment:
       - SNAPCRAFT_PYTHON_INTERPRETER: python3.9
     python-packages:
-      - setuptools #<58
+      #- setuptools #<58
       - wheel
       - Cython
-      - pip
+        #- pip
     build-packages:
       - autoconf
       - build-essential
@@ -242,7 +242,7 @@ parts:
       - libxml2-dev
       - libxslt1-dev
       - pkg-config
-      - python3-pip
+      # - python3-pip
       - python3.9-dev
       - zlib1g-dev
       - on arm64:
