@@ -205,7 +205,7 @@ parts:
 
   homeassistant:
     after: [python]
-    plugin: python #-wot-plugin
+    plugin: python-wot-plugin
     source: https://github.com/home-assistant/core.git
     source-tag: ${SNAPCRAFT_PROJECT_VERSION}
     build-environment:
