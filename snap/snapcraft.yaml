@@ -1,6 +1,6 @@
 name: home-assistant-snap
 title: Home assistant
-version: '2022.4.0'
+version: '2022.3.8'
 icon: snap/gui/home-assistant-snap.svg
 summary: Open source home automation that puts local control and privacy first
 description: |
@@ -157,7 +157,7 @@ apps:
 parts:
   python:
     plugin: autotools
-    source: https://www.python.org/ftp/python/3.9.8/Python-3.9.8.tgz
+    source: https://www.python.org/ftp/python/3.9.12/Python-3.9.12.tgz
     autotools-configure-parameters:
       - --enable-optimizations
     build-packages:
@@ -211,10 +211,11 @@ parts:
     build-environment:
       - SNAPCRAFT_PYTHON_INTERPRETER: python3.9
     python-packages:
-      #- setuptools #<58
+      - setuptools #<58
       - wheel
       - Cython
-      #- pip
+      - pip
+      - build
     build-packages:
       - autoconf
       - build-essential
@@ -242,7 +243,7 @@ parts:
       - libxml2-dev
       - libxslt1-dev
       - pkg-config
-      # - python3-pip
+        #- python3-pip
       - python3.9-dev
       - zlib1g-dev
       - on arm64:
@@ -270,6 +271,7 @@ parts:
       - -lib/python3.9/site-packages/homeassistant/components/updater
       - -lib/python3.9/site-packages/aiogithubapi*
     requirements:
+      - requirements.txt
       - requirements_all.txt
     constraints:
       - homeassistant/package_constraints.txt
