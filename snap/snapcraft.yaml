@@ -121,6 +121,7 @@ apps:
   home-assistant-snap:
     command: bin/hass --config $SNAP_DATA
     command-chain:
+      - bin/snapcraft-preload
       - bin/plug-bin
     daemon: simple
     environment:
@@ -155,6 +156,15 @@ apps:
 #    ppa: deadsnakes/ppa
 
 parts:
+  snapcraft-preload:
+    source: https://github.com/sergiusens/snapcraft-preload.git
+    plugin: cmake
+    cmake-parameters:
+      - -DCMAKE_INSTALL_PREFIX=/
+    build-packages:
+      - on amd64:
+        - gcc-multilib
+        - g++-multilib
   python:
     plugin: autotools
     source: https://www.python.org/ftp/python/3.9.12/Python-3.9.12.tgz
