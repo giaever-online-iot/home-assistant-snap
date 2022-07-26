@@ -1,6 +1,6 @@
 name: home-assistant-snap
 title: Home assistant
-version: '2022.7.5'
+version: '2022.7.7'
 icon: snap/gui/home-assistant-snap.svg
 summary: Open source home automation that puts local control and privacy first
 description: |
