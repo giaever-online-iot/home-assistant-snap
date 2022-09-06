@@ -78,7 +78,6 @@ architectures:
   - build-on: amd64
   - build-on: arm64
   - build-on: armhf
-  - build-on: ppc64el
 
 layout:
   /usr/local/lib:
@@ -106,8 +105,6 @@ slots:
     content: components
     write: 
       - $SNAP_DATA/custom_components
-    # read:
-    #   - $SNAP_DATA/home-assistant.log
   configurations:
     interface: content
     write:
@@ -126,7 +123,6 @@ apps:
     daemon: simple
     environment:
       PIP_USER: 1
-      #PYTHONPATH: "$PYTHONPATH:$SNAP/lib/python3.9/site-packages"
     restart-condition: always
     plugs: 
       - bluez
@@ -151,9 +147,9 @@ apps:
       PIP_USER: 1
     command: bin/hass --script check_config --config $SNAP_DATA -i
 
-# package-repositories:
-#  - type: apt
-#    ppa: deadsnakes/ppa
+package-repositories:
+ - type: apt
+   ppa: deadsnakes/ppa
 
 parts:
   snapcraft-preload:
@@ -165,61 +161,14 @@ parts:
       - on amd64:
         - gcc-multilib
         - g++-multilib
-  python:
-    plugin: autotools
-    source: https://www.python.org/ftp/python/3.9.12/Python-3.9.12.tgz
-    autotools-configure-parameters:
-      - --enable-optimizations
-    build-packages:
-      - build-essential
-      - gdb 
-      - lcov
-      - pkg-config
-      - libbz2-dev 
-      - libffi-dev 
-      - libgdbm-dev 
-      - libgdbm-compat-dev 
-      - liblzma-dev
-      - libncurses5-dev
-      - libreadline6-dev
-      - libsqlite3-dev
-      - libssl-dev
-      - lzma
-      - lzma-dev 
-      - tk-dev 
-      - uuid-dev 
-      - zlib1g-dev
-    override-stage: |
-      snapcraftctl stage
-      [ ! -d "${SNAPCRAFT_STAGE}/bin" ] && mkdir ${SNAPCRAFT_STAGE}/bin
-      ln -s ../usr/local/bin/python3.9 "${SNAPCRAFT_STAGE}/bin/python3.9"
-      ln -s ../usr/local/bin/python3.9 "${SNAPCRAFT_STAGE}/usr/bin/python3"
-    stage-packages:
-      - libfontconfig1
-      - libfreetype6
-      - libgdbm-compat4
-      - libgdbm6
-      - libpng16-16
-      - libtcl8.6
-      - libtk8.6
-      - libx11-6
-      - libxau6
-      - libxcb1
-      - libxdmcp6
-      - libxext6
-      - libxft2
-      - libxrender1
-      - libxss1
-      - bluetooth
-      - libbluetooth-dev
+        #- lib32stdc++6
 
   homeassistant:
-    after: [python]
     plugin: python-wot-plugin
     source: https://github.com/home-assistant/core.git
     source-tag: ${SNAPCRAFT_PROJECT_VERSION}
     build-environment:
-      - SNAPCRAFT_PYTHON_INTERPRETER: python3.9
+      - SNAPCRAFT_PYTHON_INTERPRETER: python3.10
     python-packages:
       - setuptools #<58
       - wheel
@@ -236,7 +185,7 @@ parts:
       - libavdevice-dev
       - libavfilter-dev
       - libavformat-dev
-      - libavresample-dev
+      - libavresample-dev # Needed?
       - libavutil-dev
       - libcrypt-dev
       - libffi-dev
@@ -244,7 +193,6 @@ parts:
       - libglu1-mesa-dev
       - libgpiod-dev
       - libjpeg-dev
-      - libopenzwave1.5-dev
       - libpcap0.8-dev
       - libswresample-dev
       - libssl-dev
@@ -253,19 +201,18 @@ parts:
       - libxml2-dev
       - libxslt1-dev
       - pkg-config
-        #- python3-pip
-      - python3.9-dev
+      - python3.10-dev
       - zlib1g-dev
-      - on arm64:
-        - cargo
-        - rustc
-      - on armhf:
-        - cargo
-        - gfortran
-        - rustc
-      - on ppc64el:
-        - cargo
-        - rustc
+      # - on arm64:
+      #   - cargo
+      #   - rustc
+      # - on armhf:
+      #   - cargo
+      #   - gfortran
+      #   - rustc
+      # - on ppc64el:
+      #   - cargo
+      #   - rustc
     stage-packages:
       - freeglut3
       - ffmpeg
@@ -277,16 +224,21 @@ parts:
       - netbase
       - tcpdump
       - zlib1g
+      - python3.10-venv
     stage:
-      - -lib/python3.9/site-packages/homeassistant/components/updater
-      - -lib/python3.9/site-packages/aiogithubapi*
+      - -lib/python3.10/site-packages/homeassistant/components/updater
+      - -lib/python3.10/site-packages/aiogithubapi*
     requirements:
       - requirements.txt
       - requirements_all.txt
     constraints:
       - homeassistant/package_constraints.txt
+    override-build: |
+      snapcraftctl build
+      
     override-stage: |
       snapcraftctl stage
+      find $SNAPCRAFT_STAGE/bin -type f -executable -exec sed -i 's/!\/usr\/bin\/env python3.10/!\/usr\/bin\/env python3/' {} \;
       sed -i 's/include-system-site-packages = false/include-system-site-packages = true/g' $SNAPCRAFT_STAGE/pyvenv.cfg
   updater:
     after: [homeassistant]
@@ -294,7 +246,7 @@ parts:
     source: ./src/components
     source-type: local
     organize:
-      '*': lib/python3.9/site-packages/homeassistant/components/
+      '*': lib/python3.10/site-packages/homeassistant/components/
   bins:
     plugin: dump
     source: ./src/bin
