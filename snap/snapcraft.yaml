@@ -209,6 +209,7 @@ parts:
       - on armhf:
         - gfortran
         - libatlas-base-dev
+        - rustc
       #   - cargo
       #   - rustc
       # - on ppc64el:
