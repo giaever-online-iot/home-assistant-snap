@@ -1,6 +1,6 @@
 name: home-assistant-snap
 title: Home assistant
-version: '2022.11.3'
+version: '2022.11.4'
 icon: snap/gui/home-assistant-snap.svg
 summary: Open source home automation that puts local control and privacy first
 description: |
@@ -125,6 +125,7 @@ apps:
     daemon: simple
     environment:
       PIP_USER: 1
+      PIP_ROOT_USER_ACTION: ignore
     restart-condition: always
     plugs: 
       - bluez
@@ -147,6 +148,7 @@ apps:
       - network
     environment:
       PIP_USER: 1
+      PIP_ROOT_USER_ACTION: ignore
     command: bin/hass --script check_config --config $SNAP_DATA -i
 
 package-repositories:
