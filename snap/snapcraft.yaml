@@ -1,6 +1,6 @@
 name: home-assistant-snap
 title: Home assistant
-version: '2023.2.4'
+version: '2023.2.5'
 icon: snap/gui/home-assistant-snap.svg
 summary: Open source home automation that puts local control and privacy first
 description: |
@@ -235,6 +235,7 @@ parts:
     stage:
       - -lib/python3.10/site-packages/homeassistant/components/updater
       - -lib/python3.10/site-packages/aiogithubapi*
+      - -lib/python3.10/site-packages/icalendar
     requirements:
       - requirements.txt
       - requirements_all.txt
