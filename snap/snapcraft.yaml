@@ -107,7 +107,7 @@ slots:
       - $SNAP_DATA/custom_components
   configurations:
     interface: content
-    content: vscs-content
+    content: configurations
     write:
       - $SNAP_DATA
   vscs-content:
