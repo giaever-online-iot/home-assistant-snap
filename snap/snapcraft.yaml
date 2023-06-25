@@ -238,7 +238,7 @@ parts:
       - -lib/python3.11/site-packages/icalendar*
     requirements:
       - requirements.txt
-      #- requirements_all.txt
+      - requirements_all.txt
     constraints:
       - homeassistant/package_constraints.txt
     override-build: |
