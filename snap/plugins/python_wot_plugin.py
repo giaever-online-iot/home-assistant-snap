@@ -19,7 +19,7 @@ class PluginImpl(plugins.python.PythonPlugin):
         cmds = super().get_build_commands()
         for idx, cmd in enumerate(cmds):
             if cmd.strip().startswith('pip install -c') and "requirements_all" in cmd:
-                cmds[idx] = f"{cmd.strip()} --use-deprecated=legacy-resolver"
+                cmds[idx] = f"{cmd.strip()}" # --use-deprecated=legacy-resolver"
             elif "[ -f setup.py ]" in cmd:
                 # Use cfg instead of py
                 cmds[idx] = cmd.replace('[ -f setup.py ]', '"${SNAPCRAFT_PYTHON_INTERPRETER}" -m build')

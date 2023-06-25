@@ -235,7 +235,7 @@ parts:
     stage:
       - -lib/python3.11/site-packages/homeassistant/components/updater
       - -lib/python3.11/site-packages/aiogithubapi*
-      - -lib/python3.11/site-packages/icalendar
+      - -lib/python3.11/site-packages/icalendar*
     requirements:
       - requirements.txt
       #- requirements_all.txt
