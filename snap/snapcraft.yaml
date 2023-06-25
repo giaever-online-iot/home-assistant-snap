@@ -242,6 +242,10 @@ parts:
     constraints:
       - homeassistant/package_constraints.txt
     override-build: |
+      CWD="$(pwd)"
+      cd "${SNAPCRAFT_PART_BUILD}"
+      python3 -m script.translations develop --all
+      cd "${CWD}"
       snapcraftctl build
       
     override-stage: |
