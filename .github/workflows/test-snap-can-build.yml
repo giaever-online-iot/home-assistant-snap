@@ -21,5 +21,5 @@ jobs:
           snap: ${{ steps.build.outputs.snap }}
           isClassic: 'false'
           # Plugs and Slots declarations to override default denial (requires store assertion to publish)
-          plugs: ./plug-declaration.json
+#          plugs: ./plug-declaration.json
 #          slots: ./slot-declaration.json

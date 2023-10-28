@@ -70,7 +70,7 @@ description: |
 # donation: "https://www.paypal.com/donate/?hosted_button_id=69NA8SXXFBDBN"
 license: Apache-2.0
 
-base: core22
+base: core20
 grade: stable
 confinement: strict
 
