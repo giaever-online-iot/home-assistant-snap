@@ -70,7 +70,7 @@ description: |
 # donation: "https://www.paypal.com/donate/?hosted_button_id=69NA8SXXFBDBN"
 license: Apache-2.0
 
-base: core20
+base: core22
 grade: stable
 confinement: strict
 
@@ -241,14 +241,17 @@ parts:
       - requirements_all.txt
     constraints:
       - homeassistant/package_constraints.txt
+    
     override-build: |
       CWD="$(pwd)"
       cd "${SNAPCRAFT_PART_BUILD}" && python3 -m script.translations develop --all && cd "${CWD}"
       snapcraftctl build
+    
     override-stage: |
       snapcraftctl stage
       find $SNAPCRAFT_STAGE/bin -type f -executable -exec sed -i 's/!\/usr\/bin\/env python3.11/!\/usr\/bin\/env python3/' {} \;
       sed -i 's/include-system-site-packages = false/include-system-site-packages = true/g' $SNAPCRAFT_STAGE/pyvenv.cfg
+        
   updater:
     after: [homeassistant]
     plugin: dump
