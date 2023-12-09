@@ -77,7 +77,7 @@ confinement: strict
 architectures:
   - build-on: amd64
   - build-on: arm64
-  - build-on: armhf
+  #- build-on: armhf : Don't bother anymore
 
 layout:
   /usr/local/lib:
