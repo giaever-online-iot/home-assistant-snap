@@ -13,7 +13,7 @@ description: |
   - https://en.wikipedia.org/wiki/Home_Assistant
   - https://www.home-assistant.io/
 
-  **NOTE!** This is Home Assistant Core (not Supervised). 
+  **NOTE!** This is Home Assistant Core (not Supervised).
 
   Your new installation will be available through your browser at http://localhost:8123/ (or any other IP address where this packages is installed). You will get a launcher available in your application menu on desktops.
 
