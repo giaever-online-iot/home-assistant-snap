@@ -76,8 +76,11 @@ confinement: strict
 
 architectures:
   - build-on: amd64
+    build-for: amd64
   - build-on: arm64
-  #- build-on: armhf : Don't bother anymore
+    build-for: arm64
+  - build-on: arm64
+    build-for: armhf
 
 layout:
   /usr/local/lib:
@@ -139,10 +142,12 @@ apps:
       - removable-media
     slots: 
       - components
+
   open-localhost:
     command: bin/open-localhost
     plugs:
       - desktop
+
   check-config:
     plugs: 
       - network
@@ -171,14 +176,18 @@ parts:
     plugin: python #-wot-plugin
     source: https://github.com/home-assistant/core.git
     source-tag: ${SNAPCRAFT_PROJECT_VERSION}
+
     build-environment:
-      - SNAPCRAFT_PYTHON_INTERPRETER: python3.12
+      - PARTS_PYTHON_INTERPRETER: python3.12
     python-packages:
       - setuptools #<58
       - wheel
       - Cython
       - pip
       - build
+    python-requirements:  [requirements_all.txt]
+    python-constraints:   [homeassistant/package_constraints.txt]
+    
     build-packages:
       - autoconf
       - build-essential
@@ -189,7 +198,6 @@ parts:
       - libavdevice-dev
       - libavfilter-dev
       - libavformat-dev
-        #- libavresample-dev # Needed?
       - libavutil-dev
       - libcrypt-dev
       - libffi-dev
@@ -210,15 +218,14 @@ parts:
       # - on arm64:
       #   - cargo
       #   - rustc
-      - on armhf:
-        - gfortran
-        - libatlas-base-dev
-        - rustc
       #   - cargo
       #   - rustc
-      # - on ppc64el:
-      #   - cargo
-      #   - rustc
+    override-build: |
+      set -x
+      CWD="$(pwd)"
+      cd "${CRAFT_PART_BUILD}" && ${PARTS_PYTHON_INTERPRETER} -m script.translations develop --all && cd "${CWD}"
+      craftctl default
+    
     stage-packages:
       - freeglut3
       - ffmpeg
@@ -233,20 +240,9 @@ parts:
       - python3.12-venv
       - nmap
     stage:
-      - -lib/python3.12/site-packages/homeassistant/components/updater
-      - -lib/python3.12/site-packages/aiogithubapi*
-      - -lib/python3.12/site-packages/icalendar*
-    python-requirements:
-      - requirements.txt
-      - requirements_all.txt
-    python-constraints:
-      - homeassistant/package_constraints.txt
-    
-    #override-build: |
-      #CWD="$(pwd)"
-      #cd "${CRAFT_PART_BUILD}" && python3 -m script.translations develop --all && cd "${CWD}"
-      #craftctl default
-    
+      - -lib/$PARTS_PYTHON_INTERPRETER/site-packages/homeassistant/components/updater
+      - -lib/$PARTS_PYTHON_INTERPRETER/site-packages/aiogithubapi*
+      - -lib/$PARTS_PYTHON_INTERPRETER/site-packages/icalendar*
     override-stage: |
       craftctl default 
       find "${CRAFT_STAGE}/bin" -type f -executable -exec sed -i 's/!\/usr\/bin\/env python3.12/!\/usr\/bin\/env python3/' {} \;
@@ -258,13 +254,15 @@ parts:
     source: ./src/components
     source-type: local
     organize:
-      '*': lib/python3.12/site-packages/homeassistant/components/
+      '*': lib/$PARTS_PYTHON_INTERPRETER/site-packages/homeassistant/components/
+
   bins:
     plugin: dump
     source: ./src/bin
     source-type: local
     organize:
       open-localhost: bin/open-localhost
+
   hooks:
     plugin: dump
     source: ./src/hooks
@@ -276,6 +274,7 @@ parts:
       configure: snap/hooks/configure
       post-refresh: snap/hooks/post-refresh
       connect-plug-bin: snap/hooks/connect-plug-bin
+
   config:
     plugin: dump
     source: ./src/config
