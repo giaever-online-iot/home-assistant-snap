@@ -178,7 +178,7 @@ parts:
     source-tag: ${SNAPCRAFT_PROJECT_VERSION}
 
     build-environment:
-      - PARTS_PYTHON_INTERPRETER: python3.12
+      - PARTS_PYTHON_INTERPRETER: python3.13
     python-packages:
       - setuptools #<58
       - wheel
@@ -213,7 +213,7 @@ parts:
       - libxml2-dev
       - libxslt1-dev
       - pkg-config
-      - python3.12-dev
+      - python3.13-dev
       - zlib1g-dev
       # - on arm64:
       #   - cargo
@@ -237,7 +237,7 @@ parts:
       - netbase
       - tcpdump
       - zlib1g
-      - python3.12-venv
+      - python3.13-venv
       - nmap
     stage:
       - -lib/$PARTS_PYTHON_INTERPRETER/site-packages/homeassistant/components/updater
@@ -245,7 +245,7 @@ parts:
       - -lib/$PARTS_PYTHON_INTERPRETER/site-packages/icalendar*
     override-stage: |
       craftctl default 
-      find "${CRAFT_STAGE}/bin" -type f -executable -exec sed -i 's/!\/usr\/bin\/env python3.12/!\/usr\/bin\/env python3/' {} \;
+      find "${CRAFT_STAGE}/bin" -type f -executable -exec sed -i 's/!\/usr\/bin\/env python3.13/!\/usr\/bin\/env python3/' {} \;
       sed -i 's/include-system-site-packages = false/include-system-site-packages = true/g' "${CRAFT_STAGE}/pyvenv.cfg"
         
   updater:
