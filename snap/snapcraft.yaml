@@ -237,7 +237,7 @@ parts:
       # - freeglut3 => alternative?
       - ffmpeg
       - libglu1-mesa
-      - libpcap0.8
+      # - libpcap0.8 => needed?
       - libpcap0.8-dev
       - libpulse0
       - libturbojpeg
