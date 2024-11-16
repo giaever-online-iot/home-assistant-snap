@@ -77,9 +77,9 @@ confinement: strict
 platforms:
   amd64:
   arm64:
-  armhf:
-    build-on: [arm64]
-    build-for: [armhf]
+  # armhf:
+  #   build-on: [arm64]
+  #   build-for: [armhf]
 
 # architectures:
 #   - build-on: amd64
