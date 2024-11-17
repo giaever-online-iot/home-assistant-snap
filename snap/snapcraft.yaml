@@ -163,9 +163,9 @@ apps:
       PIP_ROOT_USER_ACTION: ignore
     command: bin/hass --script check_config --config $SNAP_DATA -i
 
-#package-repositories:
-# - type: apt
-#   ppa: deadsnakes/ppa
+package-repositories:
+ - type: apt
+   ppa: deadsnakes/ppa
 
 parts:
   snapcraft-preload:
@@ -246,7 +246,7 @@ parts:
       - netbase
       - tcpdump
       - zlib1g
-      #- python3.12-venv
+      - python3.12-venv
       - nmap
     # stage:
     #   - -lib/$PARTS_PYTHON_INTERPRETER/site-packages/homeassistant/components/updater
