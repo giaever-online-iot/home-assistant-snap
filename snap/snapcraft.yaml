@@ -184,8 +184,8 @@ parts:
     source: https://github.com/home-assistant/core.git
     source-tag: $SNAPCRAFT_PROJECT_VERSION
 
-    #build-environment:
-    #  - PARTS_PYTHON_INTERPRETER: python3.12
+    build-environment:
+      - PARTS_PYTHON_INTERPRETER: python3.12
 
     python-packages:
       - setuptools #<58
