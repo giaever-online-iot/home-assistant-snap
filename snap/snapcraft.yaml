@@ -198,7 +198,7 @@ parts:
       - build
 
     python-requirements:  [requirements_all.txt]
-    # python-constraints:   [homeassistant/package_constraints.txt]
+    python-constraints:   [homeassistant/package_constraints.txt]
     
     build-packages:
       - autoconf
@@ -265,6 +265,12 @@ parts:
           -e 's@^home = '"${CRAFT_STAGE}"'/usr/bin$@home = /snap/$SNAPCRAFT_PROJECT_NAME/current/usr/bin@g'
       sed -i '\,^executable = ,d' "${CRAFT_PART_INSTALL}/pyvenv.cfg"
       sed -i '\,^command = ,d' "${CRAFT_PART_INSTALL}/pyvenv.cfg"
+
+  killer:
+    after: [homeassistant]
+    plugin: nil
+    override-prime: |
+      exit 1
 
   # updater:
   #   after: [homeassistant]
