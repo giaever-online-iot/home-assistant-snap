@@ -1,15 +1,3 @@
 #!/usr/bin/env bash
-
-CERTS_DIR="${SNAP_DATA}/certs"
-SSL_DIR="${SNAP_DATA}/.ssl"
-UUID_FILE="${SNAP_DATA}/.install-id"
-
-if ! [[ -f "${UUID_FILE}" ]]; then
-    logger "Generate UUID for ${SNAP_NAME}"
-    uuid > "${UUID_FILE}"
-    logger "${SNAP_NAME} (uuid: `cat ${UUID_FILE}`)"
-fi
-
-UUID=`cat ${UUID_FILE}`
-
-logger "${SNAP_NAME} does not support ACME.sh anymore. Please look into using Lets Encrypt or a proxy for SSL support."
+export UUID="none"
+logger "${SNAP_NAME} does not support ACME.sh anymore. Please look into a proxy such as Traefik (snap) to handle your certificates."

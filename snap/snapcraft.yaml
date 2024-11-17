@@ -138,7 +138,7 @@ apps:
     environment:
       PIP_USER: 1
       PIP_ROOT_USER_ACTION: ignore
-      PYTHONPATH: $SNAP/usr/lib/python3/dist-packages:$PYTHONPATH
+      #PYTHONPATH: $SNAP/usr/lib/python3/dist-packages:$PYTHONPATH
     restart-condition: always
     plugs: 
       - bluez
@@ -226,7 +226,7 @@ parts:
       - libxslt1-dev
       - pkg-config
       - python3.12-dev
-      - python3.12-venv
+      #- python3.12-venv
       - zlib1g-dev
       # - on arm64:
       #   - cargo
@@ -251,7 +251,7 @@ parts:
       - tcpdump
       - zlib1g
       - python3.12-venv
-      - python3.12-minimal
+      #- python3.12-minimal
       - nmap
     # stage:
     #   - -lib/$PARTS_PYTHON_INTERPRETER/site-packages/homeassistant/components/updater
@@ -291,12 +291,7 @@ parts:
     plugin: dump
     source: ./src/hooks
     source-type: local
-    stage-packages:
-      - uuid
     organize:
-      install: snap/hooks/install
-      configure: snap/hooks/configure
-      post-refresh: snap/hooks/post-refresh
       connect-plug-bin: snap/hooks/connect-plug-bin
 
   config:

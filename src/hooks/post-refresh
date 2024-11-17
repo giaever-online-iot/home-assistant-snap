@@ -3,16 +3,16 @@
 source "${SNAP}/init"
 logger "Running post-refresh ${SNAP_NAME} (uuid: ${UUID})"
 
-logger "Running config test"
-set -e
-CC="${SNAP_DATA}/custom_components"
-CCT="${SNAP_DATA}/.custom_components"
-
-if [ -d "${CCT}" ]; then
-    if [ ! -d "${CC}" ]; then
-        mv "${CCT}" "${CC}"
-    fi
-fi
-logger "Skipping config test"
+# logger "Running config test"
+# set -e
+# CC="${SNAP_DATA}/custom_components"
+# CCT="${SNAP_DATA}/.custom_components"
+# 
+# if [ -d "${CCT}" ]; then
+#     if [ ! -d "${CC}" ]; then
+#         mv "${CCT}" "${CC}"
+#     fi
+# fi
+# logger "Skipping config test"
 #export PIP_USER=1
 #$SNAP/bin/hass --script check_config --config "${SNAP_DATA}"

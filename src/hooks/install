@@ -1,4 +1,0 @@
-#!/usr/bin/env bash
-
-source "${SNAP}/init"
-logger "Running install ${SNAP_NAME} (uuid: ${UUID})"
