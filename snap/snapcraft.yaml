@@ -266,11 +266,11 @@ parts:
       sed -i '\,^executable = ,d' "${CRAFT_PART_INSTALL}/pyvenv.cfg"
       sed -i '\,^command = ,d' "${CRAFT_PART_INSTALL}/pyvenv.cfg"
 
-  debug-killer:
-    after: [homeassistant]
-    plugin: nil
-    override-prime: |
-      exit 0
+  # debug-killer:
+  #   after: [homeassistant]
+  #   plugin: nil
+  #   override-prime: |
+  #     exit 0
 
   # updater:
   #   after: [homeassistant]
