@@ -254,7 +254,7 @@ parts:
     #   - -lib/$PARTS_PYTHON_INTERPRETER/site-packages/icalendar*
     override-stage: |
       craftctl default 
-      #find "${CRAFT_STAGE}/bin" -type f -executable -exec sed -i 's/!\/usr\/bin\/env $PARTS_PYTHON_INTERPRETER/!\/usr\/bin\/env python3/' {} \;
+      find "${CRAFT_STAGE}/bin" -type f -executable -exec sed -i 's/!\/usr\/bin\/env python3.12/!\/usr\/bin\/env python3/' {} \;
       sed -i 's/include-system-site-packages = false/include-system-site-packages = true/g' "${CRAFT_STAGE}/pyvenv.cfg"
         
   # updater:
