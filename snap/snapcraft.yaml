@@ -228,8 +228,6 @@ parts:
       - netbase
       - tcpdump
       - zlib1g
-      - python3.12-venv
-      #- python3.12-minimal
       - nmap
     # stage:
     #   - -lib/$PARTS_PYTHON_INTERPRETER/site-packages/homeassistant/components/updater
