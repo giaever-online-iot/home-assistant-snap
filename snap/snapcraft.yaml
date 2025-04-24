@@ -205,8 +205,6 @@ parts:
       - libxml2-dev
       - libxslt1-dev
       - pkg-config
-      - python3.12-dev
-      #- python3.12-venv
       - zlib1g-dev
       # - on arm64:
       #   - cargo
