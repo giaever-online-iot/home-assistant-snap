@@ -150,10 +150,6 @@ apps:
       PIP_ROOT_USER_ACTION: ignore
     command: bin/hass --script check_config --config $SNAP_DATA -i
 
-package-repositories:
- - type: apt
-   ppa: deadsnakes/ppa
-
 parts:
   snapcraft-preload:
     source: https://github.com/sergiusens/snapcraft-preload.git
