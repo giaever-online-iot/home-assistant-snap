@@ -229,18 +229,6 @@ parts:
       - tcpdump
       - zlib1g
       - nmap
-    # stage:
-    #   - -lib/$PARTS_PYTHON_INTERPRETER/site-packages/homeassistant/components/updater
-    #   - -lib/$PARTS_PYTHON_INTERPRETER/site-packages/aiogithubapi*
-    #   - -lib/$PARTS_PYTHON_INTERPRETER/site-packages/icalendar*
-    override-stage: |
-      craftctl default 
-      # find "${CRAFT_STAGE}/bin" -type f -executable -exec sed -i 's/!\/usr\/bin\/env python3.12/!\/usr\/bin\/env python3/' {} \;
-      sed -i 's/include-system-site-packages = false/include-system-site-packages = true/g' "${CRAFT_STAGE}/pyvenv.cfg"
-      sed -i "${CRAFT_PART_INSTALL}/pyvenv.cfg" \
-          -e 's@^home = '"${CRAFT_STAGE}"'/usr/bin$@home = /snap/$SNAPCRAFT_PROJECT_NAME/current/usr/bin@g'
-      sed -i '\,^executable = ,d' "${CRAFT_PART_INSTALL}/pyvenv.cfg"
-      sed -i '\,^command = ,d' "${CRAFT_PART_INSTALL}/pyvenv.cfg"
 
   # debug-killer:
   #   after: [homeassistant]
