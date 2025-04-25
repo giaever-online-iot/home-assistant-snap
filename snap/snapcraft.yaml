@@ -120,9 +120,8 @@ apps:
       - bin/plug-bin
     daemon: simple
     environment:
-      PIP_USER: 1
-      PIP_ROOT_USER_ACTION: ignore
-      #PYTHONPATH: $SNAP/usr/lib/python3/dist-packages:$PYTHONPATH
+      PYTHONUSERBASE: $SNAP_DATA/deps
+      UV_CACHE_DIR: $SNAP_COMMON/.cache
     restart-condition: always
     plugs: 
       - bluez
@@ -146,8 +145,8 @@ apps:
     plugs: 
       - network
     environment:
-      PIP_USER: 1
-      PIP_ROOT_USER_ACTION: ignore
+      PYTHONUSERBASE: $SNAP_DATA/deps
+      UV_CACHE_DIR: $SNAP_COMMON/.cache
     command: bin/hass --script check_config --config $SNAP_DATA -i
 
 parts:
@@ -216,6 +215,7 @@ parts:
       CWD="$(pwd)"
       cd "${CRAFT_PART_BUILD}" && ${PARTS_PYTHON_INTERPRETER} -m script.translations develop --all && cd "${CWD}"
       craftctl default
+      (cd "${CRAFT_PART_INSTALL}/lib/python3.12/site-packages" && ls /root/project/src/patches/*.patch | xargs -n1 patch -p1 -i)
     
     stage-packages:
       # - freeglut3 => alternative?
