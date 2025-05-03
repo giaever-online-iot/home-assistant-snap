@@ -120,6 +120,7 @@ apps:
       - bin/plug-bin
     daemon: simple
     environment:
+      PATH: $SNAP/bin:$PATH
       PYTHONUSERBASE: $SNAP_DATA/deps
       UV_CACHE_DIR: $SNAP_COMMON/.cache
     restart-condition: always
@@ -149,6 +150,10 @@ apps:
       UV_CACHE_DIR: $SNAP_COMMON/.cache
     command: bin/hass --script check_config --config $SNAP_DATA -i
 
+package-repositories:
+ - type: apt
+   ppa: deadsnakes/ppa
+
 parts:
   snapcraft-preload:
     source: https://github.com/sergiusens/snapcraft-preload.git
@@ -167,18 +172,8 @@ parts:
     source-tag: $SNAPCRAFT_PROJECT_VERSION
 
     build-environment:
-      - PARTS_PYTHON_INTERPRETER: python3.12
+      - PARTS_PYTHON_INTERPRETER: python3.13
 
-    python-packages:
-      - setuptools #<58
-      - wheel
-      - Cython
-      - pip
-      - build
-
-    python-requirements:  [requirements_all.txt]
-    python-constraints:   [homeassistant/package_constraints.txt]
-    
     build-packages:
       - autoconf
       - build-essential
@@ -204,6 +199,7 @@ parts:
       - libxml2-dev
       - libxslt1-dev
       - pkg-config
+      - python3.13-dev
       - zlib1g-dev
       # - on arm64:
       #   - cargo
@@ -211,16 +207,63 @@ parts:
       #   - cargo
       #   - rustc
     override-build: |
+      set -euo pipefail
+      #source /root/parts/homeassistant/run/environment.sh
       set -x
       sed -i '/pycmus/d' requirements_all.txt
       sed -i '/mochad/d' requirements_all.txt
-      (cd "${CRAFT_PART_BUILD}" && echo "josepy<2" >> homeassistant/package_constraints.txt)
-      (cd "${CRAFT_PART_BUILD}" && ${PARTS_PYTHON_INTERPRETER} -m script.translations develop --all)
-      craftctl default
-      (cd "${CRAFT_PART_INSTALL}/lib/python3.12/site-packages" && ls /root/project/src/patches/*.patch | xargs -n1 patch -p1 -i)
+      rm -f /root/parts/homeassistant/install/bin/python3.13
+      "${PARTS_PYTHON_INTERPRETER}" -m venv ${PARTS_PYTHON_VENV_ARGS} "/root/parts/homeassistant/install"
+      PARTS_PYTHON_VENV_INTERP_PATH="/root/parts/homeassistant/install/bin/${PARTS_PYTHON_INTERPRETER}"
+      /root/parts/homeassistant/install/bin/pip --version
+      /root/parts/homeassistant/install/bin/pip install -c 'homeassistant/package_constraints.txt' -U -r 'requirements_all.txt'
+      /root/parts/homeassistant/install/bin/pip install -c 'homeassistant/package_constraints.txt' -U homeassistant==${SNAPCRAFT_PROJECT_VERSION}
+      #[ -f setup.py ] || [ -f pyproject.toml ] && /root/parts/homeassistant/install/bin/pip install -c 'homeassistant/package_constraints.txt' -U .
+      find "/root/parts/homeassistant/install" -type f -executable -print0 | xargs --no-run-if-empty -0 \
+          sed -i "1 s|^#\!${PARTS_PYTHON_VENV_INTERP_PATH}.*$|#!/usr/bin/env ${PARTS_PYTHON_INTERPRETER}|"
+
+      # look for a provisioned python interpreter
+      opts_state="$(set +o|grep errexit)"
+      set +e
+      install_dir="/root/parts/homeassistant/install/usr/bin"
+      stage_dir="/root/stage/usr/bin"
+
+      # look for the right Python version - if the venv was created with python3.10,
+      # look for python3.10
+      basename=$(basename $(readlink -f ${PARTS_PYTHON_VENV_INTERP_PATH}))
+      echo Looking for a Python interpreter called \"${basename}\" in the payload...
+      payload_python=$(find "$install_dir" "$stage_dir" -type f -executable -name "${basename}" -print -quit 2>/dev/null || true)
+
+      if [ -n "$payload_python" ]; then
+          # We found a provisioned interpreter, use it.
+          echo Found interpreter in payload: \"${payload_python}\"
+          installed_python="${payload_python##/root/parts/homeassistant/install}"
+          if [ "$installed_python" = "$payload_python" ]; then
+              # Found a staged interpreter.
+              symlink_target="..${payload_python##/root/stage}"
+          else
+              # The interpreter was installed but not staged yet.
+              symlink_target="..$installed_python"
+          fi
+      else
+          # Otherwise use what _get_system_python_interpreter() told us.
+          echo "Python interpreter not found in payload." >&2
+          symlink_target="/usr/bin/python3.13"
+      fi
+
+      if [ -z "$symlink_target" ]; then
+          echo "No suitable Python interpreter found, giving up." >&2
+          exit 1
+      fi
+
+      eval "${opts_state}"
+
+      ln -sf "${symlink_target}" "${PARTS_PYTHON_VENV_INTERP_PATH}"
+      (cd "${CRAFT_PART_INSTALL}/lib/python3.13/site-packages" && ls /root/project/src/patches/*.patch | xargs -n1 patch -p1 -i)
     
     stage-packages:
       # - freeglut3 => alternative?
+      # - build-essential
       - ffmpeg
       - libglu1-mesa
       - libpcap0.8
@@ -228,6 +271,7 @@ parts:
       - libpulse0
       - libturbojpeg
       - netbase
+      - python3.13-venv
       - tcpdump
       - zlib1g
       - nmap
