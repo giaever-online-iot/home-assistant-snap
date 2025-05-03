@@ -1,8 +1,8 @@
 diff --git a/homeassistant/bootstrap.py b/homeassistant/bootstrap.py
-index 742a293e4c4..c9743e713c3 100644
+index f1f1835863b..c1e1500d229 100644
 --- a/homeassistant/bootstrap.py
 +++ b/homeassistant/bootstrap.py
-@@ -104,7 +104,12 @@ from .setup import (
+@@ -105,7 +105,12 @@ from .setup import (
  from .util.async_ import create_eager_task
  from .util.hass_dict import HassKey
  from .util.logging import async_activate_log_queue_handler
@@ -13,32 +13,32 @@ index 742a293e4c4..c9743e713c3 100644
 +    is_snap_env,
 +    is_virtual_env,
 +)
-
+ from .util.system_info import is_official_image
+ 
  with contextlib.suppress(ImportError):
-     # Ensure anyio backend is imported to avoid it being imported in the event loop
-@@ -318,7 +323,7 @@ async def async_setup_hass(
+@@ -321,7 +326,7 @@ async def async_setup_hass(
                  err,
              )
          else:
 -            if not is_virtual_env():
 +            if not is_virtual_env() or is_snap_env():
                  await async_mount_local_lib_path(runtime_config.config_dir)
-
+ 
              basic_setup_success = (
 diff --git a/homeassistant/helpers/system_info.py b/homeassistant/helpers/system_info.py
-index 69e03904caa..4a4b7158f24 100644
+index df9679dcb08..975875d0117 100644
 --- a/homeassistant/helpers/system_info.py
 +++ b/homeassistant/helpers/system_info.py
-@@ -12,7 +12,7 @@ from typing import TYPE_CHECKING, Any
+@@ -11,7 +11,7 @@ from typing import TYPE_CHECKING, Any
  from homeassistant.const import __version__ as current_version
  from homeassistant.core import HomeAssistant
  from homeassistant.loader import bind_hass
 -from homeassistant.util.package import is_docker_env, is_virtual_env
 +from homeassistant.util.package import is_docker_env, is_snap_env, is_virtual_env
-
- from .importlib import async_import_module
- from .singleton import singleton
-@@ -62,6 +62,7 @@ async def async_get_system_info(hass: HomeAssistant) -> dict[str, Any]:
+ from homeassistant.util.system_info import is_official_image
+ 
+ from .hassio import is_hassio
+@@ -57,6 +57,7 @@ async def async_get_system_info(hass: HomeAssistant) -> dict[str, Any]:
          "virtualenv": is_virtual_env(),
          "python_version": platform.python_version(),
          "docker": False,
@@ -46,24 +46,23 @@ index 69e03904caa..4a4b7158f24 100644
          "arch": platform.machine(),
          "timezone": str(hass.config.time_zone),
          "os_name": platform.system(),
-@@ -77,6 +78,7 @@ async def async_get_system_info(hass: HomeAssistant) -> dict[str, Any]:
+@@ -75,6 +76,7 @@ async def async_get_system_info(hass: HomeAssistant) -> dict[str, Any]:
          info_object["os_version"] = await async_get_mac_ver(hass)
      elif platform.system() == "Linux":
          info_object["docker"] = is_docker_env()
 +        info_object["snap"] = is_snap_env()
-
+ 
      # Determine installation type on current data
      if info_object["docker"]:
-@@ -85,6 +87,8 @@ async def async_get_system_info(hass: HomeAssistant) -> dict[str, Any]:
+@@ -83,6 +85,8 @@ async def async_get_system_info(hass: HomeAssistant) -> dict[str, Any]:
          else:
              info_object["installation_type"] = "Unsupported Third Party Container"
-
+ 
 +    elif is_snap_env():
 +        info_object["installation_type"] = "Home Assistant Snap"
      elif is_virtual_env():
          info_object["installation_type"] = "Home Assistant Core"
-
-
+ 
 diff --git a/homeassistant/scripts/__init__.py b/homeassistant/scripts/__init__.py
 index f0600b70f48..fca430d40f1 100644
 --- a/homeassistant/scripts/__init__.py
@@ -79,33 +78,33 @@ index f0600b70f48..fca430d40f1 100644
 +    is_snap_env,
 +    is_virtual_env,
 +)
-
+ 
  # mypy: allow-untyped-defs, disallow-any-generics, no-warn-return-any
-
+ 
 @@ -48,7 +53,7 @@ def run(args: list[str]) -> int:
-
+ 
      loop = asyncio.get_event_loop()
-
+ 
 -    if not is_virtual_env():
 +    if not is_virtual_env() or is_snap_env():
          loop.run_until_complete(async_mount_local_lib_path(config_dir))
-
+ 
      _pip_kwargs = pip_kwargs(config_dir)
 diff --git a/homeassistant/util/package.py b/homeassistant/util/package.py
-index 3796bf35cd7..9b19fc3adf7 100644
+index 9720bbd4ca3..1b11d59797a 100644
 --- a/homeassistant/util/package.py
 +++ b/homeassistant/util/package.py
-@@ -25,6 +25,9 @@ def is_virtual_env() -> bool:
+@@ -27,6 +27,9 @@ def is_virtual_env() -> bool:
          sys, "real_prefix"
      )
-
+ 
 +def is_snap_env() -> bool:
 +    """Return if we run in a snap environment."""
 +    return os.environ.get("SNAP") is not None
-
+ 
  @cache
  def is_docker_env() -> bool:
-@@ -125,7 +128,7 @@ def install_package(
+@@ -134,7 +137,7 @@ def install_package(
          abs_target = os.path.abspath(target)
          args += ["--target", abs_target]
      elif (
@@ -114,4 +113,3 @@ index 3796bf35cd7..9b19fc3adf7 100644
          and not (any(var in env for var in _UV_ENV_PYTHON_VARS))
          and (abs_target := site.getusersitepackages())
      ):
---
