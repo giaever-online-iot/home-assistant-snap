@@ -1,6 +1,10 @@
 name: home-assistant-snap
 title: Home assistant
+<<<<<<< HEAD
 version: '2024.11.3'
+=======
+version: '2025.1.4'
+>>>>>>> 211dd2d (Update to 2025.1.4)
 icon: snap/gui/home-assistant-snap.svg
 summary: Open source home automation that puts local control and privacy first
 description: |
