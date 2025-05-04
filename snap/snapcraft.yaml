@@ -212,8 +212,9 @@ parts:
       #   - rustc
     override-build: |
       set -x
-      CWD="$(pwd)"
-      cd "${CRAFT_PART_BUILD}" && ${PARTS_PYTHON_INTERPRETER} -m script.translations develop --all && cd "${CWD}"
+      sed -i '/pycmus/d' requirements_all.txt
+      sed -i '/mochad/d' requirements_all.txt
+      (cd "${CRAFT_PART_BUILD}" && ${PARTS_PYTHON_INTERPRETER} -m script.translations develop --all)
       craftctl default
       (cd "${CRAFT_PART_INSTALL}/lib/python3.12/site-packages" && ls /root/project/src/patches/*.patch | xargs -n1 patch -p1 -i)
     
