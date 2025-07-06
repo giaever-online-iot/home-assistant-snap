@@ -1,6 +1,6 @@
 name: home-assistant-snap
 title: Home assistant
-version: '2024.11.3'
+version: '2024.10.4'
 icon: snap/gui/home-assistant-snap.svg
 summary: Open source home automation that puts local control and privacy first
 description: |
@@ -89,22 +89,6 @@ platforms:
 #   - build-on: arm64
 #     build-for: armhf
 
-layout:
-  /usr/local/lib:
-    bind: $SNAP/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR
-  /usr/lib:
-    bind: $SNAP/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR
-  /etc/pip.conf:
-    bind-file: $SNAP_COMMON/pip.conf
-  /etc/openzwave:
-    bind: $SNAP/openzwave
-  /etc/ethertypes:
-    bind-file: $SNAP/etc/ethertypes
-  /etc/protocols:
-    bind-file: $SNAP/etc/protocols
-  /etc/services:
-    bind-file: $SNAP/etc/services
-
 plugs:
   bin:
     interface: content
@@ -136,9 +120,8 @@ apps:
       - bin/plug-bin
     daemon: simple
     environment:
-      PIP_USER: 1
-      PIP_ROOT_USER_ACTION: ignore
-      #PYTHONPATH: $SNAP/usr/lib/python3/dist-packages:$PYTHONPATH
+      PYTHONUSERBASE: $SNAP_DATA/deps
+      UV_CACHE_DIR: $SNAP_COMMON/.cache
     restart-condition: always
     plugs: 
       - bluez
@@ -162,13 +145,9 @@ apps:
     plugs: 
       - network
     environment:
-      PIP_USER: 1
-      PIP_ROOT_USER_ACTION: ignore
+      PYTHONUSERBASE: $SNAP_DATA/deps
+      UV_CACHE_DIR: $SNAP_COMMON/.cache
     command: bin/hass --script check_config --config $SNAP_DATA -i
-
-package-repositories:
- - type: apt
-   ppa: deadsnakes/ppa
 
 parts:
   snapcraft-preload:
@@ -225,8 +204,6 @@ parts:
       - libxml2-dev
       - libxslt1-dev
       - pkg-config
-      - python3.12-dev
-      #- python3.12-venv
       - zlib1g-dev
       # - on arm64:
       #   - cargo
@@ -235,9 +212,11 @@ parts:
       #   - rustc
     override-build: |
       set -x
-      CWD="$(pwd)"
-      cd "${CRAFT_PART_BUILD}" && ${PARTS_PYTHON_INTERPRETER} -m script.translations develop --all && cd "${CWD}"
+      sed -i '/pycmus/d' requirements_all.txt
+      sed -i '/mochad/d' requirements_all.txt
+      (cd "${CRAFT_PART_BUILD}" && ${PARTS_PYTHON_INTERPRETER} -m script.translations develop --all)
       craftctl default
+      (cd "${CRAFT_PART_INSTALL}/lib/python3.12/site-packages" && ls /root/project/src/patches/*.patch | xargs -n1 patch -p1 -i)
     
     stage-packages:
       # - freeglut3 => alternative?
@@ -250,21 +229,7 @@ parts:
       - netbase
       - tcpdump
       - zlib1g
-      - python3.12-venv
-      #- python3.12-minimal
       - nmap
-    # stage:
-    #   - -lib/$PARTS_PYTHON_INTERPRETER/site-packages/homeassistant/components/updater
-    #   - -lib/$PARTS_PYTHON_INTERPRETER/site-packages/aiogithubapi*
-    #   - -lib/$PARTS_PYTHON_INTERPRETER/site-packages/icalendar*
-    override-stage: |
-      craftctl default 
-      # find "${CRAFT_STAGE}/bin" -type f -executable -exec sed -i 's/!\/usr\/bin\/env python3.12/!\/usr\/bin\/env python3/' {} \;
-      sed -i 's/include-system-site-packages = false/include-system-site-packages = true/g' "${CRAFT_STAGE}/pyvenv.cfg"
-      sed -i "${CRAFT_PART_INSTALL}/pyvenv.cfg" \
-          -e 's@^home = '"${CRAFT_STAGE}"'/usr/bin$@home = /snap/$SNAPCRAFT_PROJECT_NAME/current/usr/bin@g'
-      sed -i '\,^executable = ,d' "${CRAFT_PART_INSTALL}/pyvenv.cfg"
-      sed -i '\,^command = ,d' "${CRAFT_PART_INSTALL}/pyvenv.cfg"
 
   # debug-killer:
   #   after: [homeassistant]
