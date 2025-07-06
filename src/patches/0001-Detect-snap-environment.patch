@@ -1,8 +1,8 @@
 diff --git a/homeassistant/bootstrap.py b/homeassistant/bootstrap.py
-index 02a3b8c8fcc..bf51b14db0a 100644
+index f88912478a7..617b9cbf1db 100644
 --- a/homeassistant/bootstrap.py
 +++ b/homeassistant/bootstrap.py
-@@ -108,7 +108,12 @@ from .setup import (
+@@ -109,7 +109,12 @@ from .setup import (
  from .util.async_ import create_eager_task
  from .util.hass_dict import HassKey
  from .util.logging import async_activate_log_queue_handler
@@ -16,7 +16,7 @@ index 02a3b8c8fcc..bf51b14db0a 100644
  from .util.system_info import is_official_image
  
  with contextlib.suppress(ImportError):
-@@ -329,7 +334,7 @@ async def async_setup_hass(
+@@ -330,7 +335,7 @@ async def async_setup_hass(
                  err,
              )
          else:
