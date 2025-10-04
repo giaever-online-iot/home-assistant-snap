@@ -1,8 +1,20 @@
+From c2102d840afdb45a3d5569324d02f87f730e9c83 Mon Sep 17 00:00:00 2001
+From: Manuel Stahl <thymythos@googlemail.com>
+Date: Sat, 3 May 2025 12:55:40 +0200
+Subject: [PATCH 1/2] Detect snap environment
+
+---
+ homeassistant/bootstrap.py           | 9 +++++++--
+ homeassistant/helpers/system_info.py | 6 +++++-
+ homeassistant/scripts/__init__.py    | 9 +++++++--
+ homeassistant/util/package.py        | 5 ++++-
+ 4 files changed, 23 insertions(+), 6 deletions(-)
+
 diff --git a/homeassistant/bootstrap.py b/homeassistant/bootstrap.py
-index f88912478a7..617b9cbf1db 100644
+index afe8ea6f356..ed55b4ff759 100644
 --- a/homeassistant/bootstrap.py
 +++ b/homeassistant/bootstrap.py
-@@ -109,7 +109,12 @@ from .setup import (
+@@ -110,7 +110,12 @@ from .setup import (
  from .util.async_ import create_eager_task
  from .util.hass_dict import HassKey
  from .util.logging import async_activate_log_queue_handler
@@ -16,7 +28,7 @@ index f88912478a7..617b9cbf1db 100644
  from .util.system_info import is_official_image
  
  with contextlib.suppress(ImportError):
-@@ -330,7 +335,7 @@ async def async_setup_hass(
+@@ -329,7 +334,7 @@ async def async_setup_hass(
                  err,
              )
          else:
@@ -26,7 +38,7 @@ index f88912478a7..617b9cbf1db 100644
  
              basic_setup_success = (
 diff --git a/homeassistant/helpers/system_info.py b/homeassistant/helpers/system_info.py
-index df9679dcb08..975875d0117 100644
+index 1baec4df052..18abad1ca16 100644
 --- a/homeassistant/helpers/system_info.py
 +++ b/homeassistant/helpers/system_info.py
 @@ -11,7 +11,7 @@ from typing import TYPE_CHECKING, Any
@@ -38,7 +50,7 @@ index df9679dcb08..975875d0117 100644
  from homeassistant.util.system_info import is_official_image
  
  from .hassio import is_hassio
-@@ -57,6 +57,7 @@ async def async_get_system_info(hass: HomeAssistant) -> dict[str, Any]:
+@@ -73,6 +73,7 @@ async def async_get_system_info(hass: HomeAssistant) -> dict[str, Any]:
          "virtualenv": is_virtual_env(),
          "python_version": platform.python_version(),
          "docker": False,
@@ -46,7 +58,7 @@ index df9679dcb08..975875d0117 100644
          "arch": platform.machine(),
          "timezone": str(hass.config.time_zone),
          "os_name": platform.system(),
-@@ -75,6 +76,7 @@ async def async_get_system_info(hass: HomeAssistant) -> dict[str, Any]:
+@@ -91,6 +92,7 @@ async def async_get_system_info(hass: HomeAssistant) -> dict[str, Any]:
          info_object["os_version"] = await async_get_mac_ver(hass)
      elif platform.system() == "Linux":
          info_object["docker"] = is_docker_env()
@@ -54,7 +66,7 @@ index df9679dcb08..975875d0117 100644
  
      # Determine installation type on current data
      if info_object["docker"]:
-@@ -83,6 +85,8 @@ async def async_get_system_info(hass: HomeAssistant) -> dict[str, Any]:
+@@ -100,6 +102,8 @@ async def async_get_system_info(hass: HomeAssistant) -> dict[str, Any]:
          else:
              info_object["installation_type"] = "Unsupported Third Party Container"
  
@@ -64,7 +76,7 @@ index df9679dcb08..975875d0117 100644
          info_object["installation_type"] = "Home Assistant Core"
  
 diff --git a/homeassistant/scripts/__init__.py b/homeassistant/scripts/__init__.py
-index f0600b70f48..fca430d40f1 100644
+index 52d96109bf2..501fdfd91c4 100644
 --- a/homeassistant/scripts/__init__.py
 +++ b/homeassistant/scripts/__init__.py
 @@ -14,7 +14,12 @@ from homeassistant import runner
@@ -81,13 +93,13 @@ index f0600b70f48..fca430d40f1 100644
  
  # mypy: allow-untyped-defs, disallow-any-generics, no-warn-return-any
  
-@@ -48,7 +53,7 @@ def run(args: list[str]) -> int:
+@@ -46,7 +51,7 @@ def run(args: list[str]) -> int:
  
-     loop = asyncio.get_event_loop()
+     config_dir = extract_config_dir()
  
 -    if not is_virtual_env():
 +    if not is_virtual_env() or is_snap_env():
-         loop.run_until_complete(async_mount_local_lib_path(config_dir))
+         asyncio.run(async_mount_local_lib_path(config_dir))
  
      _pip_kwargs = pip_kwargs(config_dir)
 diff --git a/homeassistant/util/package.py b/homeassistant/util/package.py
@@ -113,3 +125,6 @@ index 9720bbd4ca3..1b11d59797a 100644
          and not (any(var in env for var in _UV_ENV_PYTHON_VARS))
          and (abs_target := site.getusersitepackages())
      ):
+-- 
+2.43.0
+
