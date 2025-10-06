@@ -217,7 +217,6 @@ parts:
       (cd "${CRAFT_PART_BUILD}" && echo "josepy<2" >> homeassistant/package_constraints.txt)
       (cd "${CRAFT_PART_BUILD}" && ${PARTS_PYTHON_INTERPRETER} -m script.translations develop --all)
       craftctl default
-      printenv
       (cd "${CRAFT_PART_INSTALL}/lib/python3.12/site-packages" && ls ${CRAFT_PROJECT_DIR}/src/patches/*.patch | xargs -n1 patch -p1 -i)
     
     stage-packages:
