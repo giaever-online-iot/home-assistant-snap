@@ -1,6 +1,6 @@
 name: home-assistant-snap
 title: Home assistant
-version: '2024.11.3'
+version: '2024.12.5'
 icon: snap/gui/home-assistant-snap.svg
 summary: Open source home automation that puts local control and privacy first
 description: |
@@ -217,7 +217,7 @@ parts:
       (cd "${CRAFT_PART_BUILD}" && echo "josepy<2" >> homeassistant/package_constraints.txt)
       (cd "${CRAFT_PART_BUILD}" && ${PARTS_PYTHON_INTERPRETER} -m script.translations develop --all)
       craftctl default
-      (cd "${CRAFT_PART_INSTALL}/lib/python3.12/site-packages" && ls ${CRAFT_PROJECT_DIR}/src/patches/*.patch | xargs -n1 patch -p1 -i)
+      (cd "${CRAFT_PART_INSTALL}/lib/python3.12/site-packages" && ls /root/project/src/patches/*.patch | xargs -n1 patch -p1 -i)
     
     stage-packages:
       # - freeglut3 => alternative?
