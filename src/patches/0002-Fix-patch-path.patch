@@ -2,14 +2,6 @@ diff --git a/snap/snapcraft.yaml b/snap/snapcraft.yaml
 index 3d23a37..d4566fb 100644
 --- a/snap/snapcraft.yaml
 +++ b/snap/snapcraft.yaml
-@@ -1,6 +1,6 @@
- name: home-assistant-snap
- title: Home assistant
--version: '2024.12.5'
-+version: '2024.11.3'
- icon: snap/gui/home-assistant-snap.svg
- summary: Open source home automation that puts local control and privacy first
- description: |
 @@ -217,7 +217,7 @@ parts:
        (cd "${CRAFT_PART_BUILD}" && echo "josepy<2" >> homeassistant/package_constraints.txt)
        (cd "${CRAFT_PART_BUILD}" && ${PARTS_PYTHON_INTERPRETER} -m script.translations develop --all)
