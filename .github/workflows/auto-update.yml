@@ -1,0 +1,130 @@
+name: Auto Update from Home Assistant Core
+
+on:
+  schedule:
+    # Check for new tags every 12 hours
+    - cron: '0 */12 * * *'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Specific tag to build (optional)'
+        required: false
+        type: string
+
+jobs:
+  check-and-create-pr:
+    runs-on: ubuntu-latest
+    outputs:
+      new_tag: ${{ steps.check.outputs.new_tag }}
+      should_create_pr: ${{ steps.check.outputs.should_create_pr }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check for new Home Assistant Core release
+        id: check
+        run: |
+          set -e
+
+          # If manual trigger with specific tag
+          if [ -n "${{ inputs.tag }}" ]; then
+            NEW_TAG="${{ inputs.tag }}"
+            echo "Manual trigger with tag: $NEW_TAG"
+            echo "new_tag=$NEW_TAG" >> $GITHUB_OUTPUT
+            echo "should_create_pr=true" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          # Fetch latest tags from home-assistant/core
+          git ls-remote --tags --refs https://github.com/home-assistant/core.git | \
+            awk '{print $2}' | \
+            sed 's|refs/tags/||' | \
+            grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | \
+            sort -V | \
+            tail -1 > /tmp/latest_ha_tag.txt
+
+          LATEST_HA_TAG=$(cat /tmp/latest_ha_tag.txt)
+          echo "Latest Home Assistant Core tag: $LATEST_HA_TAG"
+
+          # Get current version from snapcraft.yaml
+          CURRENT_VERSION=$(grep "^version:" snap/snapcraft.yaml | awk '{print $2}' | tr -d "'\"")
+          echo "Current snap version: $CURRENT_VERSION"
+
+          # Compare versions
+          if [ "$LATEST_HA_TAG" != "$CURRENT_VERSION" ]; then
+            echo "New version available: $LATEST_HA_TAG"
+            echo "new_tag=$LATEST_HA_TAG" >> $GITHUB_OUTPUT
+            echo "should_create_pr=true" >> $GITHUB_OUTPUT
+          else
+            echo "Already up to date"
+            echo "should_create_pr=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Update version in snapcraft.yaml
+        if: steps.check.outputs.should_create_pr == 'true'
+        run: |
+          NEW_VERSION="${{ steps.check.outputs.new_tag }}"
+          echo "Updating snapcraft.yaml to version $NEW_VERSION"
+          sed -i "s/^version: .*/version: '$NEW_VERSION'/" snap/snapcraft.yaml
+
+          # Verify the change
+          grep "^version:" snap/snapcraft.yaml
+
+      - name: Create Pull Request
+        if: steps.check.outputs.should_create_pr == 'true'
+        uses: peter-evans/create-pull-request@v6
+        id: create_pr
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "Update to ${{ steps.check.outputs.new_tag }}"
+          branch: auto-update/${{ steps.check.outputs.new_tag }}
+          delete-branch: true
+          title: "Update to Home Assistant ${{ steps.check.outputs.new_tag }}"
+          body: |
+            ## 🏠 Home Assistant Update
+
+            This PR updates Home Assistant to version **${{ steps.check.outputs.new_tag }}**.
+
+            ### 🔄 Build Status
+            The snap build will be automatically tested by the `test-snap-can-build` workflow.
+            Check the workflow status below before merging.
+
+            ### 📋 Changes
+            - Updated `version` in `snap/snapcraft.yaml` to `${{ steps.check.outputs.new_tag }}`
+
+            ### 🔗 Links
+            - [Home Assistant Release Notes](https://github.com/home-assistant/core/releases/tag/${{ steps.check.outputs.new_tag }})
+            - [This Workflow Run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+
+            ### ✔️ Review Checklist
+            - [ ] Wait for `🧪 Test snap can be built on x86_64` workflow to complete
+            - [ ] Review Home Assistant changelog for breaking changes
+            - [ ] Verify version update in `snapcraft.yaml`
+            - [ ] Check workflow logs for any warnings
+            - [ ] Test the snap locally if needed (download from artifacts)
+            - [ ] Merge when ready to release
+
+            ### 🚀 After Merge
+            After merging this PR, you can:
+            1. Create a release manually with the tag `${{ steps.check.outputs.new_tag }}`
+            2. Build and publish to snap store
+            3. Update channel information as needed
+
+            ---
+            *This PR was created automatically by the [Auto Update workflow](${{ github.server_url }}/${{ github.repository }}/blob/next/.github/workflows/auto-update.yml)*
+            *The snap build is handled by the existing test workflow that runs on all PRs.*
+          labels: |
+            auto-update
+            version-update
+          assignees: ${{ github.repository_owner }}
+          draft: false
+
+      - name: Report PR creation
+        if: steps.check.outputs.should_create_pr == 'true'
+        run: |
+          echo "✅ Pull request created for Home Assistant ${{ steps.check.outputs.new_tag }}"
+          echo "📋 Pull Request: ${{ steps.create_pr.outputs.pull-request-url }}"
+          echo "🔄 The snap will be built automatically by the test-snap-can-build workflow"
+          echo "⏳ Monitor the PR for build status"
