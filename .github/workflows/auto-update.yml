@@ -2,8 +2,8 @@ name: Auto Update from Home Assistant Core
 
 on:
   schedule:
-    # Check for new tags every 12 hours
-    - cron: '0 */12 * * *'
+    # Check for new tags every Friday at 23:00 UTC
+    - cron: '0 23 * * 5'
   workflow_dispatch:
     inputs:
       tag:
@@ -17,6 +17,7 @@ jobs:
     outputs:
       new_tag: ${{ steps.check.outputs.new_tag }}
       should_create_pr: ${{ steps.check.outputs.should_create_pr }}
+      pr_number: ${{ steps.create_pr.outputs.pull-request-number }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -62,8 +63,28 @@ jobs:
             echo "should_create_pr=false" >> $GITHUB_OUTPUT
           fi
 
-      - name: Update version in snapcraft.yaml
+      - name: Check if PR already exists
         if: steps.check.outputs.should_create_pr == 'true'
+        id: check_pr
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          NEW_VERSION="${{ steps.check.outputs.new_tag }}"
+
+          # Check if a PR already exists for this branch
+          EXISTING_PR=$(gh pr list --head "auto-update/$NEW_VERSION" --json number --jq '.[0].number' || echo "")
+
+          if [ -n "$EXISTING_PR" ]; then
+            echo "PR already exists: #$EXISTING_PR"
+            echo "pr_exists=true" >> $GITHUB_OUTPUT
+            echo "existing_pr_number=$EXISTING_PR" >> $GITHUB_OUTPUT
+          else
+            echo "No existing PR found for version $NEW_VERSION"
+            echo "pr_exists=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Update version in snapcraft.yaml
+        if: steps.check.outputs.should_create_pr == 'true' && steps.check_pr.outputs.pr_exists == 'false'
         run: |
           NEW_VERSION="${{ steps.check.outputs.new_tag }}"
           echo "Updating snapcraft.yaml to version $NEW_VERSION"
@@ -72,8 +93,28 @@ jobs:
           # Verify the change
           grep "^version:" snap/snapcraft.yaml
 
+      - name: Build snap
+        if: steps.check.outputs.should_create_pr == 'true' && steps.check_pr.outputs.pr_exists == 'false'
+        uses: snapcore/action-build@v1
+        id: build
+
+      - name: Review snap
+        if: steps.check.outputs.should_create_pr == 'true' && steps.check_pr.outputs.pr_exists == 'false'
+        uses: diddlesnaps/snapcraft-review-action@v1
+        with:
+          snap: ${{ steps.build.outputs.snap }}
+          isClassic: 'false'
+
+      - name: Upload snap artifact
+        if: steps.check.outputs.should_create_pr == 'true' && steps.check_pr.outputs.pr_exists == 'false'
+        uses: actions/upload-artifact@v4
+        with:
+          name: home-assistant-snap-${{ steps.check.outputs.new_tag }}
+          path: ${{ steps.build.outputs.snap }}
+          retention-days: 30
+
       - name: Create Pull Request
-        if: steps.check.outputs.should_create_pr == 'true'
+        if: steps.check.outputs.should_create_pr == 'true' && steps.check_pr.outputs.pr_exists == 'false'
         uses: peter-evans/create-pull-request@v6
         id: create_pr
         with:
@@ -87,9 +128,10 @@ jobs:
 
             This PR updates Home Assistant to version **${{ steps.check.outputs.new_tag }}**.
 
-            ### 🔄 Build Status
-            The snap build will be automatically tested by the `test-snap-can-build` workflow.
-            Check the workflow status below before merging.
+            ### ✅ Build Status
+            The snap has been successfully built and tested in this workflow run.
+            - Build artifacts are available in the workflow run artifacts
+            - Snap review passed
 
             ### 📋 Changes
             - Updated `version` in `snap/snapcraft.yaml` to `${{ steps.check.outputs.new_tag }}`
@@ -97,12 +139,12 @@ jobs:
             ### 🔗 Links
             - [Home Assistant Release Notes](https://github.com/home-assistant/core/releases/tag/${{ steps.check.outputs.new_tag }})
             - [This Workflow Run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+            - [Download Built Snap](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
 
             ### ✔️ Review Checklist
-            - [ ] Wait for `🧪 Test snap can be built on x86_64` workflow to complete
+            - [x] Snap build completed successfully
             - [ ] Review Home Assistant changelog for breaking changes
             - [ ] Verify version update in `snapcraft.yaml`
-            - [ ] Check workflow logs for any warnings
             - [ ] Test the snap locally if needed (download from artifacts)
             - [ ] Merge when ready to release
 
@@ -114,17 +156,24 @@ jobs:
 
             ---
             *This PR was created automatically by the [Auto Update workflow](${{ github.server_url }}/${{ github.repository }}/blob/next/.github/workflows/auto-update.yml)*
-            *The snap build is handled by the existing test workflow that runs on all PRs.*
+            *The snap was built and tested as part of this workflow.*
           labels: |
             auto-update
             version-update
-          assignees: ${{ github.repository_owner }}
+          assignees: jmgiaever
+          reviewers: ThyMYthOS
           draft: false
 
       - name: Report PR creation
         if: steps.check.outputs.should_create_pr == 'true'
         run: |
-          echo "✅ Pull request created for Home Assistant ${{ steps.check.outputs.new_tag }}"
-          echo "📋 Pull Request: ${{ steps.create_pr.outputs.pull-request-url }}"
-          echo "🔄 The snap will be built automatically by the test-snap-can-build workflow"
-          echo "⏳ Monitor the PR for build status"
+          if [ "${{ steps.check_pr.outputs.pr_exists }}" == "true" ]; then
+            echo "⚠️ PR already exists for Home Assistant ${{ steps.check.outputs.new_tag }}"
+            echo "📋 Existing PR: #${{ steps.check_pr.outputs.existing_pr_number }}"
+            echo "🔄 Skipping build and PR creation"
+          else
+            echo "✅ Pull request created for Home Assistant ${{ steps.check.outputs.new_tag }}"
+            echo "📋 Pull Request: ${{ steps.create_pr.outputs.pull-request-url }}"
+            echo "📦 Snap artifact: home-assistant-snap-${{ steps.check.outputs.new_tag }}"
+            echo "🔄 Snap was built and tested successfully in this workflow"
+          fi
