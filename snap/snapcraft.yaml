@@ -172,7 +172,7 @@ parts:
     source-tag: $SNAPCRAFT_PROJECT_VERSION
 
     build-environment:
-      - PARTS_PYTHON_INTERPRETER: python3.13
+      - PARTS_PYTHON_INTERPRETER: python3.14
 
     build-packages:
       - autoconf
@@ -199,7 +199,7 @@ parts:
       - libxml2-dev
       - libxslt1-dev
       - pkg-config
-      - python3.13-dev
+      - python3.14-dev
       - zlib1g-dev
       - liblzma-dev
       # - on arm64:
@@ -214,7 +214,7 @@ parts:
       sed -i '/pycmus/d' requirements_all.txt
       sed -i '/mochad/d' requirements_all.txt
       HA_INSTALL_DIR="${CRAFT_PART_INSTALL}"
-      rm -f ${HA_INSTALL_DIR}/bin/python3.13
+      rm -f ${HA_INSTALL_DIR}/bin/python3.14
       "${PARTS_PYTHON_INTERPRETER}" -m venv ${PARTS_PYTHON_VENV_ARGS} "${HA_INSTALL_DIR}"
       PARTS_PYTHON_VENV_INTERP_PATH="${HA_INSTALL_DIR}/bin/${PARTS_PYTHON_INTERPRETER}"
       ${HA_INSTALL_DIR}/bin/pip --version
@@ -250,7 +250,7 @@ parts:
       else
           # Otherwise use what _get_system_python_interpreter() told us.
           echo "Python interpreter not found in payload." >&2
-          symlink_target="/usr/bin/python3.13"
+          symlink_target="/usr/bin/python3.14"
       fi
 
       if [ -z "$symlink_target" ]; then
@@ -261,7 +261,7 @@ parts:
       eval "${opts_state}"
 
       ln -sf "${symlink_target}" "${PARTS_PYTHON_VENV_INTERP_PATH}"
-      (cd "${CRAFT_PART_INSTALL}/lib/python3.13/site-packages" && ls ${CRAFT_PROJECT_DIR}/src/patches/*.patch | xargs -n1 patch -p1 -i)
+      (cd "${CRAFT_PART_INSTALL}/lib/python3.14/site-packages" && ls ${CRAFT_PROJECT_DIR}/src/patches/*.patch | xargs -n1 patch -p1 -i)
     
     stage-packages:
       # - freeglut3 => alternative?
@@ -273,7 +273,7 @@ parts:
       - libpulse0
       - libturbojpeg
       - netbase
-      - python3.13-venv
+      - python3.14-venv
       - tcpdump
       - zlib1g
       - nmap
