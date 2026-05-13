@@ -14,7 +14,7 @@ diff --git a/homeassistant/bootstrap.py b/homeassistant/bootstrap.py
 index 4e49d6cec7e..a518c4219ff 100644
 --- a/homeassistant/bootstrap.py
 +++ b/homeassistant/bootstrap.py
-@@ -110,7 +110,12 @@ from .setup import (
+@@ -108,7 +108,12 @@ from .setup import (
  from .util.async_ import create_eager_task
  from .util.hass_dict import HassKey
  from .util.logging import async_activate_log_queue_handler
@@ -28,7 +28,7 @@ index 4e49d6cec7e..a518c4219ff 100644
  from .util.system_info import is_official_image
  
  with contextlib.suppress(ImportError):
-@@ -329,7 +334,7 @@ async def async_setup_hass(
+@@ -353,7 +358,7 @@ async def async_setup_hass(
                  err,
              )
          else:
@@ -41,24 +41,24 @@ diff --git a/homeassistant/helpers/system_info.py b/homeassistant/helpers/system
 index 1baec4df052..18abad1ca16 100644
 --- a/homeassistant/helpers/system_info.py
 +++ b/homeassistant/helpers/system_info.py
-@@ -11,7 +11,7 @@ from typing import TYPE_CHECKING, Any
+@@ -10,7 +10,7 @@ from typing import Any
+ 
  from homeassistant.const import __version__ as current_version
  from homeassistant.core import HomeAssistant
- from homeassistant.loader import bind_hass
 -from homeassistant.util.package import is_docker_env, is_virtual_env
 +from homeassistant.util.package import is_docker_env, is_snap_env, is_virtual_env
  from homeassistant.util.system_info import is_official_image
  
  from .hassio import is_hassio
-@@ -73,6 +73,7 @@ async def async_get_system_info(hass: HomeAssistant) -> dict[str, Any]:
-         "virtualenv": is_virtual_env(),
-         "python_version": platform.python_version(),
+@@ -57,6 +57,7 @@ async def async_get_system_info(hass: HomeAssistant) -> dict[str, Any]:
+         "arch": platform.machine(),
+         "dev": "dev" in current_version,
          "docker": False,
 +        "snap": False,
-         "arch": platform.machine(),
-         "timezone": str(hass.config.time_zone),
+         "hassio": is_hassio_,
+         "installation_type": "Unknown",
          "os_name": platform.system(),
-@@ -91,6 +92,7 @@ async def async_get_system_info(hass: HomeAssistant) -> dict[str, Any]:
+@@ -79,6 +80,7 @@ async def async_get_system_info(hass: HomeAssistant) -> dict[str, Any]:
          info_object["os_version"] = await async_get_mac_ver(hass)
      elif platform.system() == "Linux":
          info_object["docker"] = is_docker_env()
@@ -66,7 +66,7 @@ index 1baec4df052..18abad1ca16 100644
  
      # Determine installation type on current data
      if info_object["docker"]:
-@@ -100,6 +102,8 @@ async def async_get_system_info(hass: HomeAssistant) -> dict[str, Any]:
+@@ -88,6 +90,8 @@ async def async_get_system_info(hass: HomeAssistant) -> dict[str, Any]:
          else:
              info_object["installation_type"] = "Unsupported Third Party Container"
  
@@ -106,7 +106,7 @@ diff --git a/homeassistant/util/package.py b/homeassistant/util/package.py
 index 9720bbd4ca3..1b11d59797a 100644
 --- a/homeassistant/util/package.py
 +++ b/homeassistant/util/package.py
-@@ -27,6 +27,9 @@ def is_virtual_env() -> bool:
+@@ -36,6 +36,9 @@ def is_virtual_env() -> bool:
          sys, "real_prefix"
      )
  
@@ -116,7 +116,7 @@ index 9720bbd4ca3..1b11d59797a 100644
  
  @cache
  def is_docker_env() -> bool:
-@@ -134,7 +137,7 @@ def install_package(
+@@ -162,7 +165,7 @@ def install_package(
          abs_target = os.path.abspath(target)
          args += ["--target", abs_target]
      elif (
