@@ -70,7 +70,7 @@ description: |
 # donation: "https://www.paypal.com/donate/?hosted_button_id=69NA8SXXFBDBN"
 license: Apache-2.0
 
-base: core24
+base: core26
 grade: stable
 confinement: strict
 
@@ -119,7 +119,7 @@ apps:
       - bin/snapcraft-preload
       - bin/plug-bin
     daemon: simple
-    environment:
+    environment: &python-runtime-env
       PATH: $SNAP/bin:$PATH
       PYTHONUSERBASE: $SNAP_DATA/deps
       UV_CACHE_DIR: $SNAP_COMMON/.cache
@@ -143,16 +143,17 @@ apps:
       - desktop
 
   check-config:
-    plugs: 
+    plugs:
       - network
-    environment:
-      PYTHONUSERBASE: $SNAP_DATA/deps
-      UV_CACHE_DIR: $SNAP_COMMON/.cache
+    environment: *python-runtime-env
     command: bin/hass --script check_config --config $SNAP_DATA -i
 
-package-repositories:
- - type: apt
-   ppa: deadsnakes/ppa
+# core26 builds on Ubuntu 26.04, which ships python3.14 in the archive, so the
+# deadsnakes PPA (needed on the core24/22.04 build base) is no longer required.
+# If a build fails to find python3.14{,-dev,-venv}, restore by uncommenting:
+# package-repositories:
+#  - type: apt
+#    ppa: deadsnakes/ppa
 
 parts:
   snapcraft-preload:
@@ -224,6 +225,17 @@ parts:
       find "${HA_INSTALL_DIR}" -type f -executable -print0 | xargs --no-run-if-empty -0 \
           sed -i "1 s|^#\!${PARTS_PYTHON_VENV_INTERP_PATH}.*$|#!/usr/bin/env ${PARTS_PYTHON_INTERPRETER}|"
 
+      # ---------------------------------------------------------------------
+      # core26 SIMPLIFICATION CANDIDATE:
+      # The block below is a copy of snapcraft's python-plugin internals
+      # (_get_system_python_interpreter) used on core24 to re-point the venv at
+      # a staged python3.14 instead of the base's bundled python3.12. On core26
+      # the base ships NO python and the python plugin is designed around a
+      # staged interpreter, so this manual symlink dance is likely unnecessary.
+      # During the core26 build, try DELETING this block (down to the `ln -sf`)
+      # and verify `${HA_INSTALL_DIR}/bin/python3.14 --version` still resolves.
+      # See docs/CORE26_UPGRADE.md.
+      # ---------------------------------------------------------------------
       # look for a provisioned python interpreter
       opts_state="$(set +o|grep errexit)"
       set +e
@@ -261,6 +273,13 @@ parts:
       eval "${opts_state}"
 
       ln -sf "${symlink_target}" "${PARTS_PYTHON_VENV_INTERP_PATH}"
+
+      # ---------------------------------------------------------------------
+      # PATCH HOME ASSISTANT CORE (out-of-tree, NOT upstreamed):
+      # Applies src/patches/*.patch to the installed homeassistant package so
+      # it detects the snap environment (adds is_snap_env). Runs under `set -e`,
+      # so a context mismatch after an HA bump aborts the build loudly.
+      # ---------------------------------------------------------------------
       (cd "${CRAFT_PART_INSTALL}/lib/python3.14/site-packages" && ls ${CRAFT_PROJECT_DIR}/src/patches/*.patch | xargs -n1 patch -p1 -i)
     
     stage-packages:
