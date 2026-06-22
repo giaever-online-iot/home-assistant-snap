@@ -5,24 +5,35 @@ on:
     branches: [ master ]
   pull_request:
     branches: [ master ]
-    
+
 jobs:
   build:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [24.x]
-        
+
     steps:
       - uses: actions/checkout@v6
 
-      - uses: snapcore/action-build@v1
-        id: build
+      # Drive snapcraft directly instead of snapcore/action-build@v1 (Node 20)
+      # and diddlesnaps/snapcraft-review-action@v1 (Node 12), both of which
+      # emit GitHub "Node.js is deprecated" warnings and have no Node 24
+      # release. The steps below mirror what action-build does internally, but
+      # invoke `snapcraft pack` (bare `snapcraft` is itself deprecated).
+      - name: Set up LXD and Snapcraft
+        run: |
+          sudo groupadd --force --system lxd
+          sudo usermod --append --groups lxd "$USER"
+          sudo snap install lxd
+          sudo lxd init --auto
+          # docker (preinstalled on the runner) can break LXD networking
+          sudo iptables -P FORWARD ACCEPT
+          sudo snap install snapcraft --classic
 
-      - uses: diddlesnaps/snapcraft-review-action@v1
-        with:
-          snap: ${{ steps.build.outputs.snap }}
-          isClassic: 'false'
-          # Plugs and Slots declarations to override default denial (requires store assertion to publish)
-#          plugs: ./plug-declaration.json
-#          slots: ./slot-declaration.json
+      - name: Build snap
+        env:
+          SNAPCRAFT_BUILD_ENVIRONMENT: lxd
+        run: sg lxd -c 'snapcraft pack --verbose'
+
+      - name: Review snap
+        run: |
+          sudo snap install review-tools
+          review-tools.snap-review *.snap
