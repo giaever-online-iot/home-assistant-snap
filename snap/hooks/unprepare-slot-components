@@ -1,4 +1,4 @@
-#!/urs/bin/env bash
+#!/usr/bin/env bash
 
 logger "Disconnect 'custom_components' (HACS) from ${SNAP_NAME}"
 CC="${SNAP_DATA}/custom_components"
