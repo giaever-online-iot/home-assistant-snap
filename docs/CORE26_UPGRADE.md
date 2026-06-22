@@ -45,7 +45,9 @@ Checklist:
    $SNAP/bin/hass --version
    ```
    If both resolve, keep it deleted (KISS win). If not, restore the block.
-5. **stage-packages parity on 26.04**: confirm every staged lib still exists with the same name on 26.04 (watch `libpcap0.8`, `libturbojpeg`, `libpulse0`, `ffmpeg` sonames). A renamed/removed lib only surfaces at runtime.
+5. **stage-packages parity on 26.04**: a renamed/removed lib fails the `Fetching stage-packages` step (or only surfaces at runtime). Known rename so far:
+   - `libturbojpeg` → **`libturbojpeg0`** (noble/24.04 used the unsuffixed name; resolute/26.04 ships the SONAME-suffixed `libturbojpeg0`). Already applied.
+   - Verified still valid on 26.04: `libglu1-mesa`, `libpcap0.8`(+`-dev`), `libpulse0`, `python3.14-venv`.
 6. **Runtime smoke test**:
    ```bash
    sudo snap install ./home-assistant-snap_*.snap --dangerous

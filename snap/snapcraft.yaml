@@ -290,7 +290,7 @@ parts:
       - libpcap0.8
       - libpcap0.8-dev
       - libpulse0
-      - libturbojpeg
+      - libturbojpeg0  # core26/26.04 renamed this from `libturbojpeg` (noble/core24)
       - netbase
       - python3.14-venv
       - tcpdump
