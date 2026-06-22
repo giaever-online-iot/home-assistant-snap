@@ -22,6 +22,7 @@ Notes and checklist for moving the snap base from `core24` to `core26`
   - `deadsnakes/ppa` `package-repositories` commented out (with restore note)
   - App `environment` deduplicated via a YAML anchor (`&python-runtime-env` / `*python-runtime-env`) — was repeated across `home-assistant-snap` and `check-config`
   - `override-build`: added a marker around the interpreter-symlink block flagging it as the core26 simplification candidate, and a clear header around the HA-core patch step (previously buried as the last line)
+  - `snapcraft-preload` part: added `-DCMAKE_POLICY_VERSION_MINIMUM=3.5` — 26.04 ships CMake 4.x, which removed compatibility with the pre-3.5 `cmake_minimum_required()` in upstream snapcraft-preload
 - `.github/workflows/test-snap-can-build.yml`: removed the meaningless `node-version` build matrix (there is no Node in this project)
 
 ## Build-verification procedure (required — not done in CI here)

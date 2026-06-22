@@ -161,6 +161,9 @@ parts:
     plugin: cmake
     cmake-parameters:
       - -DCMAKE_INSTALL_PREFIX=/
+      # 26.04 ships CMake 4.x, which removed compat with the pre-3.5
+      # cmake_minimum_required() in upstream snapcraft-preload. Allow it.
+      - -DCMAKE_POLICY_VERSION_MINIMUM=3.5
     build-packages:
       - on amd64:
         - gcc-multilib
