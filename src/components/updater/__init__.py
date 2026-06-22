@@ -11,6 +11,8 @@ from homeassistant.helpers import discovery, update_coordinator
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 import homeassistant.helpers.config_validation as cv
 
+from .const import DOMAIN
+
 _LOGGER = logging.getLogger(__name__)
 _log_wmsg = """
 NOTE! Using a replacement (custom) 'updater' component for the snap package.
@@ -25,7 +27,7 @@ ATTR_NEWEST_VERSION = "newest_version"
 CONF_REPORTING = "reporting"
 CONF_COMPONENT_REPORTING = "include_used_components"
 
-DOMAIN = "updater"
+# DOMAIN is imported from .const (single source of truth)
 
 UPDATER_URL = "https://api.snapcraft.io/v2/snaps/info/home-assistant-snap?architecture=%s&fields=channel-map,revision,version"
 
@@ -273,19 +275,17 @@ async def async_setup(hass, config):
         releases in another channel, if they have the same revision available
         """
 
-        if current_channel.get_track() == "latest":
-            _LOGGER.warning(
+        # current_channel may be None when this revision is not present in any
+        # fetched channel-map; guard before dereferencing it (see else branch below).
+        if current_channel is not None and current_channel.get_track() == "latest":
+            latest_channel_msg = (
                 f"You're on the channel «{current_channel}», please consider switch to «{default_track.get_latest()}». "
                 f"Switch with: sudo snap switch --channel={default_track.get_latest()}"
                 f"Staying on {current_channel} will auto-upgrade your Home Assistant instance, which "
                 f"can cause your Home Assistant instance to stop working as of breaking changes."
             )
-            return Updater(False, default_track.get_latest(), current_channel, None,
-                f"You're on the channel «{current_channel}», please consider switch to «{default_track.get_latest()}». "
-                f"Switch with: sudo snap switch --channel={default_track.get_latest()}"
-                f"Staying on {current_channel} will auto-upgrade your Home Assistant instance, which "
-                f"can cause your Home Assistant instance to stop working as of breaking changes."
-            )
+            _LOGGER.warning(latest_channel_msg)
+            return Updater(False, default_track.get_latest(), current_channel, None, latest_channel_msg)
 
         if current_channel is not None:
             newer_channel = current_channel.get_track().channel_with_higher_revision(current_channel)
