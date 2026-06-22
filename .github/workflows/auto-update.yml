@@ -93,17 +93,32 @@ jobs:
           # Verify the change
           grep "^version:" snap/snapcraft.yaml
 
-      - name: Build snap
+      # Drive snapcraft directly instead of the deprecated Node-runtime actions
+      # (snapcore/action-build@v1 = Node 20, diddlesnaps review = Node 12).
+      - name: Set up LXD and Snapcraft
         if: steps.check.outputs.should_create_pr == 'true' && steps.check_pr.outputs.pr_exists == 'false'
-        uses: snapcore/action-build@v1
+        run: |
+          sudo groupadd --force --system lxd
+          sudo usermod --append --groups lxd "$USER"
+          sudo snap install lxd
+          sudo lxd init --auto
+          sudo iptables -P FORWARD ACCEPT
+          sudo snap install snapcraft --classic
+
+      - name: Build snap
         id: build
+        if: steps.check.outputs.should_create_pr == 'true' && steps.check_pr.outputs.pr_exists == 'false'
+        env:
+          SNAPCRAFT_BUILD_ENVIRONMENT: lxd
+        run: |
+          sg lxd -c 'snapcraft pack --verbose'
+          echo "snap=$(ls -1 *.snap | head -1)" >> "$GITHUB_OUTPUT"
 
       - name: Review snap
         if: steps.check.outputs.should_create_pr == 'true' && steps.check_pr.outputs.pr_exists == 'false'
-        uses: diddlesnaps/snapcraft-review-action@v1
-        with:
-          snap: ${{ steps.build.outputs.snap }}
-          isClassic: 'false'
+        run: |
+          sudo snap install review-tools
+          review-tools.snap-review "${{ steps.build.outputs.snap }}"
 
       - name: Upload snap artifact
         if: steps.check.outputs.should_create_pr == 'true' && steps.check_pr.outputs.pr_exists == 'false'
