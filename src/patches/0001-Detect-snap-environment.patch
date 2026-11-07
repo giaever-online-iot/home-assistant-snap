@@ -4,39 +4,10 @@ Date: Sat, 3 May 2025 12:55:40 +0200
 Subject: [PATCH 1/2] Detect snap environment
 
 ---
- homeassistant/bootstrap.py           | 9 +++++++--
  homeassistant/helpers/system_info.py | 6 +++++-
- homeassistant/scripts/__init__.py    | 9 +++++++--
  homeassistant/util/package.py        | 5 ++++-
- 4 files changed, 23 insertions(+), 6 deletions(-)
+ 2 files changed, 9 insertions(+), 2 deletions(-)
 
-diff --git a/homeassistant/bootstrap.py b/homeassistant/bootstrap.py
-index 4e49d6cec7e..a518c4219ff 100644
---- a/homeassistant/bootstrap.py
-+++ b/homeassistant/bootstrap.py
-@@ -108,7 +108,12 @@ from .setup import (
- from .util.async_ import create_eager_task
- from .util.hass_dict import HassKey
- from .util.logging import async_activate_log_queue_handler
--from .util.package import async_get_user_site, is_docker_env, is_virtual_env
-+from .util.package import (
-+    async_get_user_site,
-+    is_docker_env,
-+    is_snap_env,
-+    is_virtual_env,
-+)
- from .util.system_info import is_official_image
- 
- with contextlib.suppress(ImportError):
-@@ -353,7 +358,7 @@ async def async_setup_hass(
-                 err,
-             )
-         else:
--            if not is_virtual_env():
-+            if not is_virtual_env() or is_snap_env():
-                 await async_mount_local_lib_path(runtime_config.config_dir)
- 
-             if hass.config.safe_mode:
 diff --git a/homeassistant/helpers/system_info.py b/homeassistant/helpers/system_info.py
 index 1baec4df052..18abad1ca16 100644
 --- a/homeassistant/helpers/system_info.py
@@ -75,33 +46,6 @@ index 1baec4df052..18abad1ca16 100644
      elif is_virtual_env():
          info_object["installation_type"] = "Home Assistant Core"
  
-diff --git a/homeassistant/scripts/__init__.py b/homeassistant/scripts/__init__.py
-index 52d96109bf2..501fdfd91c4 100644
---- a/homeassistant/scripts/__init__.py
-+++ b/homeassistant/scripts/__init__.py
-@@ -14,7 +14,12 @@ from homeassistant import runner
- from homeassistant.bootstrap import async_mount_local_lib_path
- from homeassistant.config import get_default_config_dir
- from homeassistant.requirements import pip_kwargs
--from homeassistant.util.package import install_package, is_installed, is_virtual_env
-+from homeassistant.util.package import (
-+    install_package,
-+    is_installed,
-+    is_snap_env,
-+    is_virtual_env,
-+)
- 
- # mypy: allow-untyped-defs, disallow-any-generics, no-warn-return-any
- 
-@@ -46,7 +51,7 @@ def run(args: list[str]) -> int:
- 
-     config_dir = extract_config_dir()
- 
--    if not is_virtual_env():
-+    if not is_virtual_env() or is_snap_env():
-         asyncio.run(async_mount_local_lib_path(config_dir))
- 
-     _pip_kwargs = pip_kwargs(config_dir)
 diff --git a/homeassistant/util/package.py b/homeassistant/util/package.py
 index 9720bbd4ca3..1b11d59797a 100644
 --- a/homeassistant/util/package.py
