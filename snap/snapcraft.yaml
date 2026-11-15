@@ -1,6 +1,6 @@
 name: home-assistant-snap
 title: Home assistant
-version: '2026.10.4'
+version: '2026.11.1'
 icon: snap/gui/home-assistant-snap.svg
 summary: Open source home automation that puts local control and privacy first
 description: |
@@ -59,7 +59,7 @@ description: |
   - *hardware-observe*: required to use the `usb` discovery component.
 
   **Available slots**
-  - *components:* Load custom components to Home Assistant. You will find the Home Assistant Community Store package here: https://snapcraft.io/home-assistant-hacs - Installations on own risk and note that provided integrations are not tested or guaranteed to work.
+  - *components:* Load custom components to Home Assistant. Home Assistant 2026.11 and later includes the Marketplace for community integrations. Installations are at your own risk; provided integrations are not tested or guaranteed to work.
   - *bin:* Missing binaries might be in the Home Assistant Toolbox, such as cURL etc. See https://snapcraft.io/home-assistant-toolbox
   - *configurations:* Edit your configuration files with `code-server` (VS Code) or HASS configurator:
     - https://snapcraft.io/code-server
