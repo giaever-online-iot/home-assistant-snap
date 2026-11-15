@@ -15,7 +15,7 @@ This snap-version of Home Assistant was made with the intention of running a hom
 
 Based on this intention we have choosen a strict confinement, which should work out of the box on the [Ubuntu Core](https://ubuntu.com/core) operating system and similar. As changes to the snap on these systems are limited we have also built several other snaps that will integrate with this version or help manage devices remotely.
 
-* [Home Assistant Community Store](https://git.giaever.org/joachimmg/home-assistant-hacs)-integration gives you a powerful UI to handle downloads of all your custom needs.
+* Home Assistant 2026.11 and later includes the [Marketplace](https://www.home-assistant.io/integrations/marketplace/) for community integrations, cards, and themes. Earlier releases can use the [Home Assistant Community Store](https://git.giaever.org/joachimmg/home-assistant-hacs).
 * [HASS Configurator](https://git.giaever.org/joachimmg/home-assistant-configurator)-integration to allow easy configuration of Home Assistant.
 * [acme.sh](https://git.giaever.org/joachimmg/acme-sh) (SSL): probably the easiest & smartest shell script to automatically issue & renew the free certificates from Let's Encrypt.
 * [ddclient](https://git.giaever.org/joachimmg/ddclient-snap): client used to update dynamic DNS entries for accounts on many dynamic DNS services.
@@ -36,6 +36,36 @@ Please file all issues using the main git-repository found at [git.giaever.org](
     * Home Assistant is configured to scan for updated certificates, replace them and to restart to use the new version. 
 * **How do I use dynamic DNS?**
     * Use `ddclient-snap`, see: [cclient-snap](https://git.giaever.org/joachimmg/ddclient-snap)
+
+## Testing
+
+The [x86_64 build workflow](.github/workflows/test-snap-can-build.yml) runs on
+pushes and pull requests to `master`. It builds the snap with Snapcraft and LXD,
+reviews it with `snap-review`, and uploads it as an artifact for seven days.
+
+After the build succeeds, a separate job tests the artifact on a fresh Ubuntu
+runner:
+
+1. Runs unit tests for the integration test script and its dependency fixture.
+2. Installs the built snap, configures a disposable Home Assistant instance,
+   checks its patched Python startup, and completes onboarding using dummy data.
+3. Creates a disposable custom integration with a test-only Python wheel served
+   from localhost, then restarts Home Assistant.
+4. Verifies that the built-in Marketplace is loaded and starts the test
+   integration's configuration flow. The flow checks that Home Assistant
+   installed and imported the dependency from the snap's writable data directory.
+
+The job reports snap logs and custom-component and dependency paths on failure.
+It does not test downloading an integration through the Marketplace. The
+standalone script tests can also be run locally with:
+
+```bash
+python3 -m unittest discover -s .github/scripts -p 'test_integration_workflow.py' -v
+```
+
+The separate [auto-update workflow](docs/AUTO_UPDATE.md) checks for new Home
+Assistant releases and builds and reviews an updated snap before creating a
+pull request; it does not run the custom integration installation check itself.
 
 ## Build and installation
 ### Install from The Snap Store (Recommended)
