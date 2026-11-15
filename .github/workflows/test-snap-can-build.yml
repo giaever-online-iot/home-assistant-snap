@@ -37,3 +37,73 @@ jobs:
         run: |
           sudo snap install review-tools
           review-tools.snap-review *.snap
+
+      - name: Upload snap
+        uses: actions/upload-artifact@v4
+        with:
+          name: home-assistant-snap-amd64
+          path: ./*.snap
+          if-no-files-found: error
+          retention-days: 7
+
+  test-integration:
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Test integration check script
+        run: python3 -m unittest discover -s .github/scripts -p 'test_integration_workflow.py' -v
+
+      - name: Download built snap
+        uses: actions/download-artifact@v4
+        with:
+          name: home-assistant-snap-amd64
+          path: snap-artifact
+
+      - name: Install snap and configure test instance
+        run: |
+          shopt -s nullglob
+          snaps=(snap-artifact/*.snap)
+          if [ "${#snaps[@]}" -ne 1 ]; then
+            echo "Expected exactly one snap, found ${#snaps[@]}" >&2
+            exit 1
+          fi
+          sudo snap install --dangerous "${snaps[0]}"
+          sudo snap stop home-assistant-snap
+          sudo tee /var/snap/home-assistant-snap/current/configuration.yaml >/dev/null <<'EOF'
+          homeassistant:
+            name: CI Test Home
+            latitude: 0
+            longitude: 0
+            elevation: 0
+            unit_system: metric
+            time_zone: UTC
+          default_config:
+          EOF
+          sudo snap start home-assistant-snap
+
+      - name: Test patched Python startup
+        env:
+          HA_MAIN_PATH: /snap/home-assistant-snap/current/lib/python3.14/site-packages/homeassistant/__main__.py
+        run: python3 .github/scripts/test_snap_runtime.py -v
+
+      - name: Onboard Home Assistant and test integration dependencies
+        run: python3 .github/scripts/test-integration.py
+
+      - name: Show snap logs on failure
+        if: failure()
+        run: |
+          sudo snap changes
+          sudo systemctl status snap.home-assistant-snap.home-assistant-snap.service --no-pager -l || true
+          echo "Custom component directory contents:"
+          sudo find -L /var/snap/home-assistant-snap/current/custom_components -maxdepth 2 \
+            -printf '%M %u:%g %p -> %l\n' 2>&1 || true
+          echo "Dependency directory and test package:"
+          sudo find -L /var/snap/home-assistant-snap/current/deps -maxdepth 5 \
+            \( -type d -name site-packages -o -iname '*ci_snap_test_dependency*' \) \
+            -printf '%M %u:%g %p -> %l\n' 2>&1 || true
+          echo "Test integration manifest:"
+          sudo cat /var/snap/home-assistant-snap/current/custom_components/snap_ci_test/manifest.json || true
+          sudo snap logs home-assistant-snap -n 200 || true
